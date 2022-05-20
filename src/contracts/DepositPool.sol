@@ -19,6 +19,7 @@ contract DepositPool is IDepositPool, ERC20 {
     address public uniPair;
     address public token0;
     address public token1;
+    address public positionManager;
 
     uint public lastUniInvariant;
     uint public lastUniTotalSupply;
@@ -47,10 +48,11 @@ contract DepositPool is IDepositPool, ERC20 {
         unlocked = 1;
     }
 
-    constructor(address _uniRouter, address _uniPair, address _token0, address _token1) ERC20("Gammaswap V0", "GAMA-V0") {
+    constructor(address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager) ERC20("Gammaswap V0", "GAMA-V0") {
         uniRouter = _uniRouter;
         uniPair = _uniPair;
         (token0, token1) = GammaswapLibrary.sortTokens(_token0, _token1);
+        positionManager = _positionManager;
     }
 
     // **** ADD LIQUIDITY ****
@@ -111,6 +113,16 @@ contract DepositPool is IDepositPool, ERC20 {
         (uint amount0, uint amount1) = burn(to);
         require(amountA >= amountAMin, 'DepositPool: INSUFFICIENT_A_AMOUNT');
         require(amountB >= amountBMin, 'DepositPool: INSUFFICIENT_B_AMOUNT');
+    }
+
+    function addBorrowedTokens(uint256 tokensOwed0, uint256 tokensOwed1, uint256 liquidity) internal {
+        UNI_LP_BORROWED = UNI_LP_BORROWED + liquidity;
+        uint256 borrowedLiquidity = GammaswapLibrary.convertAmountsToLiquidity(tokensOwed0, tokensOwed1);
+        if(BORROWED_INVARIANT > 0) {
+            BORROWED_INVARIANT = BORROWED_INVARIANT + borrowedLiquidity;
+        } else {
+            BORROWED_INVARIANT = borrowedLiquidity;
+        }
     }
 
     function getUtilizationRate() external view returns(uint256 _utilizationRate) {
@@ -283,14 +295,13 @@ contract DepositPool is IDepositPool, ERC20 {
          */
     //function openPosition(uint256 liquidity, uint256 swapAmt, bool isBuy) external onlyPositionManager lock override
     function openPosition(uint256 liquidity) external lock override returns (uint256 tokensOwed0, uint256 tokensOwed1) {
-
-        //onlyPositionManager
-        /*require(liquidity <= totalUniLiquidity, 'VegaswapV1: INSUFFICIENT_LIQUIDITY_IN_CPM');
+        /*require(msg.sender == positionManager, 'DepositPool: FORBIDDEN');
+        require(liquidity <= totalUniLiquidity, 'DepositPool: INSUFFICIENT_LIQUIDITY_IN_CPM');
 
         this.getAndUpdateLastFeeIndex();
 
         //remove that liquidity
-        (tokensOwed0, tokensOwed1) = removeLiquidity(token0, token1, uniPair, liquidity, address(this));
+        (tokensOwed0, tokensOwed1) = removeLiquidity(liquidity, address(this));
 
         totalUniLiquidity = IERC20(uniPair).balanceOf(address(this));
 
@@ -300,7 +311,7 @@ contract DepositPool is IDepositPool, ERC20 {
         _safeTransferFn(token0, msg.sender, tokensOwed0);
         _safeTransferFn(token1, msg.sender, tokensOwed1);
 
-        emit OpenPosition(tokensOwed0, tokensOwed1);/**/
+        //emit OpenPosition(tokensOwed0, tokensOwed1);/**/
     }
 
     function _safeTransferFn(address token, address to, uint value) internal {//changed from private
