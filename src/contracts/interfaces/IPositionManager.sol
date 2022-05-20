@@ -13,19 +13,19 @@ interface IPositionManager {
         address uniPair;
         uint256 tokensHeld0;
         uint256 tokensHeld1;
-        uint256 uniPairHeld;
+        //uint256 uniPairHeld;
         uint256 liquidity;
         uint256 rateIndex;
         uint256 blockNum;
     }
 
-    struct MintParams {
+    /*struct MintParams {
         address token0;
         address token1;
         uint256 liquidity;
         address recipient;
         uint256 deadline;
-    }
+    }/**/
     /*function IPositionManager(){
 
     }/**/

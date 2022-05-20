@@ -57,6 +57,8 @@ module.exports = async function(_deployer, network, accounts) {
         let depositPool = await DepositPool.deployed();
         console.log("deployer::positionManager.address=" + positionManager.address);/**/
         console.log("deployer::depositPool.address=" + depositPool.address);/**/
+
+        await positionManager.registerPool(tokenAaddr, tokenBaddr, depositPool.address, { from: accounts[0] });
     } else if(network == "development") {
         console.log("deploy development");
 
@@ -98,5 +100,7 @@ module.exports = async function(_deployer, network, accounts) {
         await _deployer.deploy(DepositPool, uniRouter.address, uniPair, tokenA.address, tokenB.address, positionManager.address, { from: accounts[0] });
         let depositPool = await DepositPool.deployed();
         console.log("deployer::depositPool.address="+depositPool.address);
+
+        await positionManager.registerPool(tokenA.address, tokenB.address, depositPool.address, { from: accounts[0] });
     }
 };

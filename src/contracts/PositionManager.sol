@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
 
 import './libraries/GammaswapPosLibrary.sol';
 import './interfaces/IPositionManager.sol';
@@ -64,32 +65,42 @@ contract PositionManager is IPositionManager, ERC721 {
         _tokenBalances[position.uniPair] = IERC20(position.uniPair).balanceOf(address(this));
     }
 
+    function openPosition(address token0, address token1, uint256 amount0, uint256 amount1, uint256 liquidity, address to) external returns (uint256 tokenId) {
+        TransferHelper.safeTransferFrom(token0, msg.sender, address(this), amount0);
+        TransferHelper.safeTransferFrom(token1, msg.sender, address(this), amount1);
+        tokenId = mint(token0, token1, liquidity, to);
+    }
+
     /*
      * TODO: Instead of portfolio value use invariant to measure liquidity. This will enable to also increase the position size based on liquidity
      * Also the liquidity desired should probably be measured in terms of an invariant.
      */
     //TODO: When we mint and increase positions we have to track the funds that we're holding for the pool
     /// inheritdoc IVegaswapV1Position
-    function mint(MintParams calldata params) external returns (uint256 tokenId) {
+    //function mint(MintParams calldata params) internal returns (uint256 tokenId) {
+    function mint(address token0, address token1, uint256 liquidity, address to) internal returns (uint256 tokenId) {
         //function mint(MintParams calldata params) external payable override checkDeadline(params.deadline) returns (uint256 tokenId) {
         //We transfer token0Amt and token1Amt at the same time
         //params.liquidity is the liquidity as LP shares of uni pool. In the GUI it will look like quantites of A and B. and a sum total in terms of B/A collateral
         //PositionParams memory posParams = getPositionParams(params);//your position will be in terms of A*B
 
-        /*(address _token0, address _token1) = GammaswapPosLibrary.sortTokens(params.token0, params.token1);
+        //(address _token0, address _token1) = GammaswapPosLibrary.sortTokens(params.token0, params.token1);
+        (address _token0, address _token1) = GammaswapPosLibrary.sortTokens(token0, token1);
         address _poolId = getPool[_token0][_token1];
         require(_poolId != address(0), 'PositionManager: POOL_NOT_FOUND');
 
-        address _uniPair = IDepositPool(_poolId).uniPair;
+        address _uniPair = IDepositPool(_poolId).getUniPair();
         (uint256 _token0Amt, uint256 _token1Amt) = getDepositedAmounts(_token0, _token1);
 
         uint256 _accFeeIndex = IDepositPool(_poolId).getAndUpdateLastFeeIndex();
 
-        (uint256 _tokensOwed0, uint256 _tokensOwed1) = IDepositPool(_poolId).openPosition(params.liquidity);
+        //(uint256 _tokensOwed0, uint256 _tokensOwed1) = IDepositPool(_poolId).openPosition(params.liquidity);
+        (uint256 _tokensOwed0, uint256 _tokensOwed1) = IDepositPool(_poolId).openPosition(liquidity);
 
         uint256 _liquidity = GammaswapPosLibrary.convertAmountsToLiquidity(_tokensOwed0,_tokensOwed1);//this liquidity
 
-        _mint(params.recipient, (tokenId = _nextId++));
+        //_mint(params.recipient, (tokenId = _nextId++));
+        _mint(to, (tokenId = _nextId++));
 
         _positions[tokenId] = Position({
             nonce: 0,
@@ -97,10 +108,10 @@ contract PositionManager is IPositionManager, ERC721 {
             poolId: _poolId,
             token0: _token0,
             token1: _token1,
-            tokensHeld0: _tokensOwed0.add(_token0Amt),
-            tokensHeld1: _tokensOwed1.add(_token1Amt),
+            tokensHeld0: (_tokensOwed0 + _token0Amt),
+            tokensHeld1: (_tokensOwed1 + _token1Amt),
             uniPair: _uniPair,
-            uniPairHeld: _uniPairAmt,
+            //uniPairHeld: _uniPairAmt,
             liquidity: _liquidity,
             rateIndex: _accFeeIndex,
             blockNum: block.number

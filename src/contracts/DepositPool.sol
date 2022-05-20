@@ -55,6 +55,10 @@ contract DepositPool is IDepositPool, ERC20 {
         positionManager = _positionManager;
     }
 
+    function getUniPair() external virtual override view returns(address _uniPair) {
+        _uniPair = uniPair;
+    }
+
     // **** ADD LIQUIDITY ****
     function _addLiquidity(
         uint amountADesired,
@@ -295,7 +299,7 @@ contract DepositPool is IDepositPool, ERC20 {
          */
     //function openPosition(uint256 liquidity, uint256 swapAmt, bool isBuy) external onlyPositionManager lock override
     function openPosition(uint256 liquidity) external lock override returns (uint256 tokensOwed0, uint256 tokensOwed1) {
-        /*require(msg.sender == positionManager, 'DepositPool: FORBIDDEN');
+        require(msg.sender == positionManager, 'DepositPool: FORBIDDEN');
         require(liquidity <= totalUniLiquidity, 'DepositPool: INSUFFICIENT_LIQUIDITY_IN_CPM');
 
         this.getAndUpdateLastFeeIndex();

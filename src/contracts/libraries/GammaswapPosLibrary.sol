@@ -29,17 +29,18 @@ library GammaswapPosLibrary {
         amount = ((liquidity * rootNumber(px)) / (10**18)) * 2;//TODO: Make sure this can't be hacked
     }
 
-    function getPositionBalances(address uniPair, uint256 liquidity, uint256 tokensHeld0, uint256 tokensHeld1, uint256 uniPairHeld) internal view returns(uint256 owedBalance, uint256 heldBalance) {
+    function getPositionBalances(address uniPair, uint256 liquidity, uint256 tokensHeld0, uint256 tokensHeld1) //, uint256 uniPairHeld)
+        internal view returns(uint256 owedBalance, uint256 heldBalance) {
         (uint reserve0, uint reserve1,) = IUniswapV2Pair(uniPair).getReserves();
 
         uint256 px = (reserve1 * (10**18)) / reserve0;
         owedBalance = convertLiquidityToOneAmount(liquidity, px);
         heldBalance = tokensHeld1 + ((tokensHeld0 * reserve1) / reserve0);
-        if(uniPairHeld > 0) {
+        /*if(uniPairHeld > 0) {
             uint256 uniTotalSupply = IERC20(uniPair).totalSupply();
             uint256 uniPairHeldBalance = ((uniPairHeld * reserve1) * 2) / uniTotalSupply;
             heldBalance = heldBalance + uniPairHeldBalance;
-        }
+        }/**/
     }
 
     function convertAmountsToLiquidity(uint256 amount0, uint256 amount1) internal view returns(uint256 liquidity) {
@@ -68,7 +69,7 @@ library GammaswapPosLibrary {
         */
     function checkCollateral(IPositionManager.Position storage position, uint16 limit) internal {
         (, uint256 liquidity) = getPositionLiquidity(position);//We store the interest charged as added liquidity. To do that we have to square the cumRate
-        (uint256 owedBalance, uint256 heldBalance) = getPositionBalances(position.uniPair, liquidity, position.tokensHeld0, position.tokensHeld1, position.uniPairHeld);
+        (uint256 owedBalance, uint256 heldBalance) = getPositionBalances(position.uniPair, liquidity, position.tokensHeld0, position.tokensHeld1);//, position.uniPairHeld);
         require((heldBalance * limit) / 1000 >= owedBalance, 'GammaswapPosLibrary: INSUFFICIENT_COLLATERAL_DEPOSITED');
     }
 
