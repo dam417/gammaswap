@@ -10,7 +10,7 @@ import './Math.sol';
 library GammaswapLibrary {
 
     function rootNumber(uint256 num) internal view returns(uint256 root) {
-        root = Math.sqrt(num * 10**18);
+        root = Math.sqrt(num * (10**18));
     }
 
     function min(uint num0, uint num1) internal view returns(uint res) {

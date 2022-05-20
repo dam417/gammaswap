@@ -8,8 +8,9 @@ import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
 
 import './libraries/GammaswapLibrary.sol';
+import "./interfaces/IDepositPool.sol";
 
-contract DepositPool is ERC20 {
+contract DepositPool is IDepositPool, ERC20 {
 
     uint public constant ONE = 10**18;
     uint public constant MINIMUM_LIQUIDITY = 10**3;
@@ -34,6 +35,8 @@ contract DepositPool is ERC20 {
     uint public OPTIMAL_UTILIZATION_RATE = 8*(10**17);
     uint public SLOPE1 = 10**18;
     uint public SLOPE2 = 10**18;
+
+    bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
     uint private unlocked = 1;
 
@@ -129,7 +132,7 @@ contract DepositPool is ERC20 {
     }
 
     //TODO: What happens if the pool becomes empty? lastFeeIndex becomes 1 but accFeeIndex shouldn't become 1. Will the uniInvariants and/or uniSupply become 0?
-    function getLastFeeIndex() external view returns(uint _accFeeIndex, uint _lastUniInvariant, uint _lastUniTotalSupply, uint _lastFeeIndex) {
+    function getLastFeeIndex() external override view returns(uint _accFeeIndex, uint _lastUniInvariant, uint _lastUniTotalSupply, uint _lastFeeIndex) {
         (uint256 reserve0, uint256 reserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
         if(reserve0 > 0 && reserve1 > 0) {
             _lastUniInvariant = (reserve0 * reserve1) / (10**18);
@@ -150,7 +153,7 @@ contract DepositPool is ERC20 {
         }
     }
 
-    function getAndUpdateLastFeeIndex() external returns(uint256 _accFeeIndex) {
+    function getAndUpdateLastFeeIndex() external override returns(uint256 _accFeeIndex) {
         uint256 _lastFeeIndex;
         (_accFeeIndex, lastUniInvariant, lastUniTotalSupply, _lastFeeIndex) = this.getLastFeeIndex();
         if(BORROWED_INVARIANT > 0) {
@@ -269,6 +272,41 @@ contract DepositPool is ERC20 {
     }/**/
 
     //TODO: openPosition
+    /**
+         * TODO: The attack is borrow large sum, depress the price of token0, then deposit token1 to use up all the pool liquidity
+         * then trade back up to recover loaned out funds and make a profit in the IL
+         * Come up with an equation to show that this can't be gamed with a flash loan. It can be gamed but the issue only affects the less steep
+         * part of the uniswap curve. Issue could be resolved with a small fee. But the same issue could affect suppliers.
+         * If that's the case the other solution is using a fee based on a TWAP. Say deposits are measured based on an UNI TWAP rather than the spot price.
+         * Same for opening positions.
+         * Come up with a math formula to explain this attack
+         */
+    //function openPosition(uint256 liquidity, uint256 swapAmt, bool isBuy) external onlyPositionManager lock override
+    function openPosition(uint256 liquidity) external lock override returns (uint256 tokensOwed0, uint256 tokensOwed1) {
+
+        //onlyPositionManager
+        /*require(liquidity <= totalUniLiquidity, 'VegaswapV1: INSUFFICIENT_LIQUIDITY_IN_CPM');
+
+        this.getAndUpdateLastFeeIndex();
+
+        //remove that liquidity
+        (tokensOwed0, tokensOwed1) = removeLiquidity(token0, token1, uniPair, liquidity, address(this));
+
+        totalUniLiquidity = IERC20(uniPair).balanceOf(address(this));
+
+        addBorrowedTokens(tokensOwed0, tokensOwed1, liquidity);
+
+        //All amounts are transferred to positionManager
+        _safeTransferFn(token0, msg.sender, tokensOwed0);
+        _safeTransferFn(token1, msg.sender, tokensOwed1);
+
+        emit OpenPosition(tokensOwed0, tokensOwed1);/**/
+    }
+
+    function _safeTransferFn(address token, address to, uint value) internal {//changed from private
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(SELECTOR, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), 'DepositPool: TRANSFER_FAILED');
+    }
 
     //TODO: closePosition
 
