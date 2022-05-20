@@ -11,6 +11,7 @@ contract PositionManager is IPositionManager, ERC721 {
 
     uint256 MAX_SLIPPAGE = 10**17;//10%
 
+    bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
     /// @dev IDs of pools assigned by this contract
     //mapping(address => uint80) private _poolIds;
 
@@ -135,6 +136,51 @@ contract PositionManager is IPositionManager, ERC721 {
          * what happens with OTM options. With ATM options delta is 50 at the start. with ITM options delta is > 50 at the start.
          */
         //emit MintPosition(tokenId, _liquidity, position.tokensHeld0, position.tokensHeld1, position.uniPairHeld, _accFeeIndex);
+    }
+
+
+    /// inheritdoc IVegaswapV1Position
+    function increaseCollateral(uint256 tokenId, uint256 amount0, uint256 amount1) external returns (uint256 token0Amt, uint256 token1Amt)
+    {
+        Position storage position = _positions[tokenId];
+
+        TransferHelper.safeTransferFrom(position.token0, msg.sender, address(this), amount0);
+        TransferHelper.safeTransferFrom(position.token1, msg.sender, address(this), amount1);
+
+        (token0Amt, token1Amt) = getDepositedAmounts(position.token0, position.token1);
+
+        position.tokensHeld0 = position.tokensHeld0 + token0Amt;
+        position.tokensHeld1 = position.tokensHeld1 + token1Amt;
+
+        updateTokenBalances(position);
+
+        //emit IncreaseCollateral(tokenId, position.tokensHeld0, position.tokensHeld1, position.uniPairHeld);
+    }
+
+    /// inheritdoc IVegaswapV1Position
+    function decreaseCollateral(uint256 tokenId, uint256 amount0, uint256 amount1, address to) external isAuthorizedForToken(tokenId) returns (uint256 tokensHeld0, uint256 tokensHeld1)
+    {
+        Position storage position = _positions[tokenId];
+
+        position.tokensHeld0 = position.tokensHeld0 - amount0;
+        position.tokensHeld1 = position.tokensHeld1 - amount1;
+
+        (, uint256 liquidity) = GammaswapPosLibrary.getPositionLiquidity(position);//We store the interest charged as added liquidity. To do that we have to square the cumRate
+        (uint256 owedBalance, uint256 heldBalance) = GammaswapPosLibrary.getPositionBalances(position.uniPair, liquidity, position.tokensHeld0, position.tokensHeld1);//, position.uniPairHeld);
+        require((heldBalance * 750) / 1000 >= owedBalance, 'PositionManager: EXCESSIVE_COLLATERAL_REMOVAL');
+
+        _safeTransferFn(position.token0, to, amount0);
+        _safeTransferFn(position.token1, to, amount1);
+
+        updateTokenBalances(position);
+
+        //emit DecreaseCollateral(tokenId, position.tokensHeld0, position.tokensHeld1, position.uniPairHeld);
+    }
+
+
+    function _safeTransferFn(address token, address to, uint value) internal {//changed from private
+        (bool success, bytes memory data) = token.call(abi.encodeWithSelector(SELECTOR, to, value));
+        require(success && (data.length == 0 || abi.decode(data, (bool))), 'DepositPool: TRANSFER_FAILED');
     }
     /*function PositionManager(){
 
