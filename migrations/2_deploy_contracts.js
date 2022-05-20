@@ -22,8 +22,14 @@ module.exports = async function(_deployer, network, accounts) {
         let uniRouterAddr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
         let uniPairAddr = "0x0ea795cc5f3db9607feadfdf56a139264179ef1e";
         let uniFactoryAddr = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
+        let positionManagerAddr = '0x8d505e6Ec65c3DE1e6AC7F989D9e7d0c1edb42ab';
 
         let isNewTokens = false;
+        let isNewPosManager = true;
+
+        const url = `https://ropsten.infura.io/v3/${projectId}`;
+        const provider = (isNewTokens || !isNewPosManager) ? new ethers.providers.JsonRpcProvider(url) : null;
+
         if(isNewTokens) {
             await _deployer.deploy(TestERC20, 'TokenA', 'TOKA',
                 ethers.BigNumber.from(10000000000).mul(ethers.BigNumber.from(10).pow(18)), { from: accounts[0] });
@@ -50,8 +56,14 @@ module.exports = async function(_deployer, network, accounts) {
             tokenBaddr = tokenB.address;
         }
 
-        await _deployer.deploy(PositionManager, "Gammaswap PosMgr V0", "GAMPOS-VO", { from: accounts[0] });
-        let positionManager = await PositionManager.deployed();
+        let positionManager;
+
+        if(isNewPosManager) {
+            await _deployer.deploy(PositionManager, "Gammaswap PosMgr V0", "GAMPOS-VO", { from: accounts[0] });
+            positionManager = await PositionManager.deployed();
+        } else {
+            positionManager = new ethers.Contract(positionManagerAddr, JSON.stringify(PositionManager.abi), provider).connect(provider.getSigner(accounts[0]));
+        }
 
         await _deployer.deploy(DepositPool, uniRouterAddr, uniPairAddr, tokenAaddr, tokenBaddr, positionManager.address, { from: accounts[0] });
         let depositPool = await DepositPool.deployed();

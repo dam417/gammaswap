@@ -51,9 +51,15 @@ contract PositionManager is IPositionManager, ERC721 {
 
     function registerPool(address token0, address token1, address pool) external {
         require(msg.sender == owner, "PositionManager: FORBIDDEN");
-        getPool[token0][token1] = pool;
-        getPool[token1][token0] = pool; // populate mapping in the reverse direction
-        allPools.push(pool);
+        if(getPool[token0][token1] == address(0) || getPool[token1][token0] == address(0)) {
+            getPool[token0][token1] = pool;
+            getPool[token1][token0] = pool; // populate mapping in the reverse direction
+            allPools.push(pool);
+        }
+    }
+
+    function allPoolsLength() external view returns (uint) {
+        return allPools.length;
     }
 
     function getDepositedAmounts(address token0, address token1) internal view returns(uint256 token0Amt, uint256 token1Amt) {
