@@ -3,6 +3,8 @@
  */
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Borrow from './components/Borrow';
+import Lend from './components/Lend';
 const Tab = styled.button`
   font-size: 20px;
   padding: 10px 60px;
@@ -39,7 +41,7 @@ function TabGroup() {
             ))}
         </ButtonGroup>
         <p />
-        {active == 'Lend' ? <div>Lend LPs</div> : <div>Borrow LPs</div>}
+        {active == 'Lend' ? <Lend/> : <Borrow/>}
         </>
     );
 }

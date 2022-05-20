@@ -9,11 +9,11 @@ import Web3 from "web3/dist/web3.min.js";
 import truncateEthAddress from 'truncate-eth-address'
 
 function App() {
-  const [account, setAccount] = useState("default account");
+  const [account, setAccount] = useState("...");
 
   useEffect(() => {
     loadWeb3()
-  });
+  },[]);
 
   const loadWeb3 = async () => {
     if (window.ethereum) {
@@ -25,8 +25,8 @@ function App() {
       window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
     }
     if (window.web3) {
-      var accounts = await web3.eth.getAccounts()
-      setAccount(truncateEthAddress(accounts[0]))
+      var accounts = await web3.eth.getAccounts();
+      setAccount(truncateEthAddress(accounts[0]));
     }
 
   };
