@@ -52,15 +52,13 @@ contract DepositPool is ERC20 {
 
     // **** ADD LIQUIDITY ****
     function _addLiquidity(
-        address tokenA,
-        address tokenB,
         uint amountADesired,
         uint amountBDesired,
         uint amountAMin,
         uint amountBMin
     ) internal virtual returns (uint amountA, uint amountB) {
         // create the pair if it doesn't exist ye
-        (uint reserveA, uint reserveB) = GammaswapLibrary.getUniReserves(uniPair, tokenA, tokenB);
+        (uint reserveA, uint reserveB) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
         if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {
@@ -87,18 +85,29 @@ contract DepositPool is ERC20 {
     */
 
     function addLiquidity(
-        address tokenA,
-        address tokenB,
         uint amountADesired,
         uint amountBDesired,
         uint amountAMin,
         uint amountBMin,
         address to
     ) external virtual returns (uint amountA, uint amountB, uint liquidity) {
-        (amountA, amountB) = _addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin);
-        TransferHelper.safeTransferFrom(tokenA, msg.sender, address(this), amountA);
-        TransferHelper.safeTransferFrom(tokenB, msg.sender, address(this), amountB);
+        (amountA, amountB) = _addLiquidity(amountADesired, amountBDesired, amountAMin, amountBMin);
+        TransferHelper.safeTransferFrom(token0, msg.sender, address(this), amountA);
+        TransferHelper.safeTransferFrom(token1, msg.sender, address(this), amountB);
         liquidity = mint(to);
+    }
+
+    // **** REMOVE LIQUIDITY ****
+    function removeLiquidity(
+        uint liquidity,
+        uint amountAMin,
+        uint amountBMin,
+        address to
+    ) public virtual returns (uint amountA, uint amountB) {
+        transferFrom(msg.sender, address(this), liquidity); // send liquidity to pair
+        (uint amount0, uint amount1) = burn(to);
+        require(amountA >= amountAMin, 'DepositPool: INSUFFICIENT_A_AMOUNT');
+        require(amountB >= amountBMin, 'DepositPool: INSUFFICIENT_B_AMOUNT');
     }
 
     function getUtilizationRate() external view returns(uint256 _utilizationRate) {
@@ -210,15 +219,54 @@ contract DepositPool is ERC20 {
         /**/
     }
 
-    //Uniswap.
-    /*function removeLiquidity(address _token0, address _token1, address _uniPair, uint liquidity, address to) internal returns(uint amount0, uint amount1) {
-        address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
-        if(liquidity > IERC20(_uniPair).allowance(address(this), _uniRouter)) {
-            IERC20(_uniPair).approve(_uniRouter, uint(-1));
-        }
-        (amount0, amount1) = IUniswapV2Router02(_uniRouter).removeLiquidity(_token0, _token1, liquidity, 0, 0, to, uint(-1));
-    }/**/
+    function calculateLiquidityAmounts(uint liquidity) internal returns(uint256 amount0, uint256 amount1) {
+        (uint balance0, uint balance1) = GammaswapLibrary.getTokenBalances(token0, token1, uniPair);
+
+        (uint256 _reserve0, uint256 _reserve1) = GammaswapLibrary.getBorrowedReserves(uniPair, balance0, balance1, totalUniLiquidity, BORROWED_INVARIANT);
+
+        uint _totalSupply = totalSupply(); // gas savings, must be defined here since totalSupply can update in _mintFee
+        require(_totalSupply > 0, 'DepositPool: INSUFFICIENT_UNI_LIQUIDITY_AVAILABLE');
+
+        amount0 = (liquidity * _reserve0) / _totalSupply; // using balances ensures pro-rata distribution
+        amount1 = (liquidity * _reserve1) / _totalSupply; // using balances ensures pro-rata distribution
+    }
+
+    function calculateUniLiquidity(uint amount0, uint amount1) internal returns(uint256 uniLiquidity) {
+        //remove from uni LPs only
+        (uint256 _uniReserve0, uint256 _uniReserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
+        uint256 uniTotalSupply = IERC20(uniPair).totalSupply();
+        uniLiquidity = GammaswapLibrary.min2((amount0 * uniTotalSupply) / _uniReserve0, (amount1 * uniTotalSupply) / _uniReserve1);
+    }
+
     //TODO: remove liquidity
+    // this low-level function should be called from a contract which performs important safety checks
+    function burn(address to) internal lock returns (uint _amount0, uint _amount1) {
+
+        this.getAndUpdateLastFeeIndex();
+
+        uint256 liquidity = balanceOf(address(this));
+        (uint amount0, uint amount1) = calculateLiquidityAmounts(liquidity);
+        require(amount0 > 0 && amount1 > 0, 'DepositPool: INSUFFICIENT_LIQUIDITY_BURNED');
+
+        //remove from uni LPs only
+        uint256 uniLiquidity = calculateUniLiquidity(amount0, amount1);
+        require(uniLiquidity <= IERC20(uniPair).balanceOf(address(this)), 'DepositPool: INSUFFICIENT_UNI_LIQUIDITY_AVAILABLE');
+
+        (_amount0, _amount1) = removeLiquidity(uniLiquidity, to);
+
+        totalUniLiquidity = IERC20(uniPair).balanceOf(address(this));
+        _burn(address(this), liquidity);
+
+        //emit Burn(msg.sender, _amount0, _amount1, uniLiquidity, to);
+    }
+
+    //Uniswap.
+    function removeLiquidity(uint liquidity, address to) internal returns(uint amount0, uint amount1) {
+        if(liquidity > IERC20(uniPair).allowance(address(this), uniRouter)) {
+            IERC20(uniPair).approve(uniRouter, type(uint).max);
+        }
+        (amount0, amount1) = IUniswapV2Router02(uniRouter).removeLiquidity(token0, token1, liquidity, 0, 0, to, type(uint).max);
+    }/**/
 
     //TODO: openPosition
 
