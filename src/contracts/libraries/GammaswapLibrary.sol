@@ -2,10 +2,48 @@
 //pragma solidity >=0.6.2;
 pragma solidity ^0.8.0;
 
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 
+import './Math.sol';
 
 library GammaswapLibrary {
+
+    function rootNumber(uint256 num) internal view returns(uint256 root) {
+        root = Math.sqrt(num * 10**18);
+    }
+
+    function min(uint num0, uint num1) internal view returns(uint res) {
+        res = Math.min(num0, num1);
+    }
+
+    function min2(uint256 num0, uint256 num1) internal view returns(uint256 res) {
+        res = Math.min2(num0, num1);
+    }
+
+    function getBorrowedReserves(address uniPair, uint256 _uniReserve0, uint256 _uniReserve1, uint256 totalUniLiquidity, uint256 borrowedInvariant) internal view returns(uint256 _reserve0, uint256 _reserve1) {
+        //borrowedInvariant
+        uint256 uniTotalSupply = IERC20(uniPair).totalSupply();
+        _reserve0 = (_uniReserve0 * totalUniLiquidity) / uniTotalSupply;
+        _reserve1 = (_uniReserve1 * totalUniLiquidity) / uniTotalSupply;
+        if(borrowedInvariant > 0) {
+            uint256 resRoot1 = rootNumber(_uniReserve1);
+            uint256 resRoot0 = rootNumber(_uniReserve0);
+            uint256 vegaReserve1 = (borrowedInvariant * resRoot1) / resRoot0;
+            uint256 vegaReserve0 = (borrowedInvariant * resRoot0) / resRoot1;
+            _reserve0 = _reserve0 + vegaReserve0;
+            _reserve1 = _reserve1 + vegaReserve1;
+        }
+    }
+
+    function getTokenBalances(address _token0, address _token1, address _of) internal view returns(uint256 balance0, uint256 balance1) {
+        balance0 = IERC20(_token0).balanceOf(_of);
+        balance1 = IERC20(_token1).balanceOf(_of);
+    }
+
+    function convertAmountsToLiquidity(uint256 amount0, uint256 amount1) internal view returns(uint256 liquidity) {
+        liquidity = Math.sqrt(amount0 * amount1);
+    }
 
     // returns sorted token addresses, used to handle return values from pairs sorted in this order
     function sortTokens(address tokenA, address tokenB) internal pure returns (address token0, address token1) {
