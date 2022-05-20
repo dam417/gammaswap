@@ -13,7 +13,7 @@
     "pretest": "yarn compile",
     "test": "mocha",
     "prepublishOnly": "yarn test",
-    "generate-types": "npx typechain --target=truffle-v5 'build/contracts/*.json'",
+    "generate-types": "npx typechain --target=truffle-v5 'src/abis/*.json'",
     "postinstall": "npx truffle compile && npm run generate-types",
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -41,7 +41,8 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "web3": "^1.7.3"
+    "web3": "^1.7.3",
+    "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.7.0",
@@ -57,5 +58,17 @@
     "ts-node": "^10.7.0",
     "typechain": "^8.0.0",
     "typescript": "^4.6.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
