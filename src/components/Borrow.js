@@ -21,7 +21,7 @@ function Borrow(props) {
         <div>
             Borrow LPs Form
         </div>
-    )
+    );
 
 }
 export default Borrow;

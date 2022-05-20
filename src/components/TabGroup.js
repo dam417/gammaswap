@@ -3,8 +3,8 @@
  */
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Borrow from './components/Borrow';
-import Lend from './components/Lend';
+import Borrow from './Borrow';
+import Lend from './Lend';
 const Tab = styled.button`
   font-size: 20px;
   padding: 10px 60px;
