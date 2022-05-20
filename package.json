@@ -41,8 +41,9 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "web3": "^1.7.3",
-    "web-vitals": "^2.1.4"
+    "truncate-eth-address": "^1.0.2",
+    "web-vitals": "^2.1.4",
+    "web3": "^1.7.3"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "^1.7.0",
