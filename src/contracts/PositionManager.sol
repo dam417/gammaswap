@@ -182,6 +182,49 @@ contract PositionManager is IPositionManager, ERC721 {
         (bool success, bytes memory data) = token.call(abi.encodeWithSelector(SELECTOR, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))), 'DepositPool: TRANSFER_FAILED');
     }
+
+
+    function updatePositionLiquidity(Position storage position) internal {
+        (position.rateIndex, position.liquidity) = GammaswapPosLibrary.getPositionLiquidity(position);
+    }
+
+    /*
+        Sent amounts necessary to close the position.
+     */
+    /// inheritdoc INonfungiblePositionManager
+    function decreasePosition(uint256 tokenId, uint256 liquidity) external isAuthorizedForToken(tokenId) {
+        Position storage position = _positions[tokenId];
+
+        (uint256 token0Amt, uint256 token1Amt) = getDepositedAmounts(position.token0, position.token1);
+
+        position.tokensHeld0 = position.tokensHeld0 + token0Amt;
+        position.tokensHeld1 = position.tokensHeld1 + token1Amt;
+
+        //TODO: (Urgent) Think need to fix this. This might not make sense. Because the tokensHeld might be enough to
+        //pay the liquidity we want to pay but the geometric mean of them might be lower than the liquidity we want to pay
+        uint256 totalLiquidityProvided = GammaswapPosLibrary.convertAmountsToLiquidity(position.tokensHeld0, position.tokensHeld1);
+        require(liquidity <= totalLiquidityProvided, "PositionManager: NOT_ENOUGH_LIQUIDITY_PROVIDED");//In the UI we pass
+
+        updatePositionLiquidity(position);
+        (uint256 owedBalance, uint256 heldBalance) = GammaswapPosLibrary.getPositionBalances(position.uniPair, position.liquidity, position.tokensHeld0, position.tokensHeld1);//, position.uniPairHeld);
+        require(heldBalance >= owedBalance, 'PositionManager: IS_UNDERWATER');
+        //require(liquidity <= position.liquidity, "VegaswapV1: EXCESSIVE_LIQUIDITY_BURNED");//In the UI we pass
+
+        uint256 liquidity = position.liquidity < liquidity ? position.liquidity : liquidity;
+
+        //Transfer tokens held and all collateral available
+        _safeTransferFn(position.token0, position.poolId, position.tokensHeld0);
+        _safeTransferFn(position.token1, position.poolId, position.tokensHeld1);
+
+        (position.tokensHeld0, position.tokensHeld1) = IDepositPool(position.poolId).closePosition(liquidity);
+
+        position.liquidity = position.liquidity - liquidity;
+
+        updateTokenBalances(position);
+        //No need to check collateral because decreasing position always improves collateralization
+
+        //emit DecreasePosition(tokenId, liquidity, position.tokensHeld0, position.tokensHeld1);
+    }
     /*function PositionManager(){
 
     }/**/

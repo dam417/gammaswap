@@ -129,6 +129,13 @@ contract DepositPool is IDepositPool, ERC20 {
         }
     }
 
+    function decBorrowedTokens(uint256 liquidity, uint256 uniLiquidity) internal {
+        UNI_LP_BORROWED = uniLiquidity <= UNI_LP_BORROWED ? (UNI_LP_BORROWED - uniLiquidity) : 0;
+        if(BORROWED_INVARIANT > 0) {
+            BORROWED_INVARIANT = BORROWED_INVARIANT - liquidity;
+        }
+    }
+
     function getUtilizationRate() external view returns(uint256 _utilizationRate) {
         uint256 totalLPShares = totalUniLiquidity + UNI_LP_BORROWED;
         _utilizationRate = (UNI_LP_BORROWED * ONE) / totalLPShares;
@@ -324,6 +331,26 @@ contract DepositPool is IDepositPool, ERC20 {
     }
 
     //TODO: closePosition
+    function closePosition(uint256 liquidity) external override returns(uint256 leftAmount0, uint256 leftAmount1) {
+        require(msg.sender == positionManager, 'DepositPool: FORBIDDEN');
+        require(liquidity > 0, "VegaswapV1: LIQUIDITY_IS_ZERO");
+        this.getAndUpdateLastFeeIndex();
+
+        (uint256 amount0, uint256 amount1) = GammaswapLibrary.convertPoolLiquidityToAmounts(uniPair, liquidity);
+
+        (,, uint uniLiquidity) = addLiquidity(amount0, amount1, 0, 0);
+
+        totalUniLiquidity = IERC20(uniPair).balanceOf(address(this));
+
+        decBorrowedTokens(liquidity, uniLiquidity);
+
+        //All amounts are transferred to positionManager
+        (leftAmount0, leftAmount1) = GammaswapLibrary.getTokenBalances(token0, token1, address(this));
+
+        //Whatever is left we send back to Position, that will be the profit
+        _safeTransferFn(token0, msg.sender, leftAmount0);
+        _safeTransferFn(token1, msg.sender, leftAmount1);
+    }
 
     //TODO: updateYield (based on utilization ratio)
 

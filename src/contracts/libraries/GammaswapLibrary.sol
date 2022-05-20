@@ -21,6 +21,25 @@ library GammaswapLibrary {
         res = Math.min2(num0, num1);
     }
 
+    function convertLiquidityToAmounts(uint256 liquidity, uint256 px) internal view returns(uint256 amount0, uint256 amount1) {
+        uint256 pxRoot = rootNumber(px);
+        uint256 _one = (10**18);
+        amount0 = (liquidity * _one) / pxRoot;
+        amount1 = (liquidity * pxRoot) / _one;
+    }
+
+    function convertPoolLiquidityToAmounts(address uniPair, uint256 liquidity) internal view returns(uint256 amount0, uint256 amount1) {
+        uint256 px = getPairPx(uniPair);
+        (amount0, amount1) = convertLiquidityToAmounts(liquidity, px);
+    }
+
+    //Uniswap
+    function getPairPx(address uniPair) internal view returns(uint256 px) {
+        //(uint256 reserve0, uint256 reserve1) = getCPMReserves(uniPair);
+        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(uniPair).getReserves();
+        px = (reserve1 * (10**18)) / reserve0;
+    }
+
     function getBorrowedReserves(address uniPair, uint256 _uniReserve0, uint256 _uniReserve1, uint256 totalUniLiquidity, uint256 borrowedInvariant) internal view returns(uint256 _reserve0, uint256 _reserve1) {
         //borrowedInvariant
         uint256 uniTotalSupply = IERC20(uniPair).totalSupply();
