@@ -71,6 +71,7 @@ module.exports = async function(_deployer, network, accounts) {
         console.log("deployer::depositPool.address=" + depositPool.address);/**/
 
         await positionManager.registerPool(tokenAaddr, tokenBaddr, depositPool.address, { from: accounts[0] });
+        console.log("pool registered");
     } else if(network == "development") {
         console.log("deploy development");
 
