@@ -27,7 +27,7 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
 // `;
 // const types = ['Lend', 'Borrow'];
 
-function TabGroup() {
+function TabGroup(props) {
     // const [active, setActive] = useState(types[0]);
     return (
         <Tabs variant='soft-rounded' colorScheme='green'>
@@ -37,10 +37,10 @@ function TabGroup() {
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Lend />
+                    <Lend depPool={props.depPool} />
                 </TabPanel>
                 <TabPanel>
-                    <Borrow />
+                    <Borrow posManager={props.posManager}/>
                 </TabPanel>
             </TabPanels>
         </Tabs>

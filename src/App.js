@@ -4,12 +4,16 @@ import {BrowserRouter as Router, Routes, Switch, Route} from "react-router-dom";
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import TabGroup from './components/TabGroup';
-import React, { useState, useEffect  } from 'react'
+import React, { useState, useEffect } from 'react'
+import PosManager from './abis/PositionManager.json';
+import DepPool from './abis/DepositPool.json';
 import Web3 from "web3/dist/web3.min.js";
 import truncateEthAddress from 'truncate-eth-address'
 
 function App() {
   const [account, setAccount] = useState("...");
+  const [posManager, setPosManager] = useState({});
+  const [depPool, setDepPool] = useState({});
 
   useEffect(() => {
     loadWeb3()
@@ -27,6 +31,18 @@ function App() {
     if (window.web3) {
       var accounts = await web3.eth.getAccounts();
       setAccount(truncateEthAddress(accounts[0]));
+      const networkId = await web3.eth.net.getId();
+
+      const posMgrNetworkData = PosManager.networks[networkId];
+      if (posMgrNetworkData) {
+          const _posManager = new web3.eth.Contract(PosManager.abi, posMgrNetworkData.address.toString());
+          setPosManager(_posManager);
+      }
+      const depPoolNetworkData = DepPool.networks[networkId];
+      if (depPoolNetworkData) {
+          const _depPool = new web3.eth.Contract(DepPool.abi, depPoolNetworkData.address.toString());
+          setDepPool(_depPool);
+      }
     }
 
   };
@@ -41,7 +57,7 @@ function App() {
               <Route exact path={"/"}
                      element={<Home/>}/>
               <Route exact path={"/app"}
-                     element={<TabGroup/>}/>
+                     element={<TabGroup posManager={posManager} depPool={depPool}/>}/>
             </Routes>
           </header>
         </div>
