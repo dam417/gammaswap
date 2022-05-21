@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form';
-import * as Web3 from "web3/dist/web3.min.js";
-import truncateEthAddress from 'truncate-eth-address';
+//import * as Web3 from "web3/dist/web3.min.js";
+//import truncateEthAddress from 'truncate-eth-address';
 import {
     FormControl,
     FormLabel,
@@ -12,7 +12,7 @@ import {
     FormHelperText,
 } from '@chakra-ui/react'
 
-function Borrow({ token0, token1, posManager }) {
+function Borrow({ account, token0, token1, posManager }) {
     // Declare a new state variable, which we'll call "count"
     // const [tokenA, setTokenA] = useState(0);
     // const [tokenB, setTokenB] = useState(0);
@@ -24,20 +24,19 @@ function Borrow({ token0, token1, posManager }) {
     // let path = `/pool/${id}`;
     // navigate(path);
     // }
-    const [toAddr, setToAddr] = useState("...");
     const { register, handleSubmit } = useForm();
     const { register: register2, handleSubmit: handleSubmit2 } = useForm();
 
     useEffect(() => {
-        loadAddresses()
-    }, [])
+        //loadAddresses()
+    }, []);/**/
 
-    async function loadAddresses() {
+    /*async function loadAddresses() {
         if (window.web3) {
             const accounts = await web3.eth.getAccounts();
             setToAddr(truncateEthAddress(accounts[0]));
         }
-    }
+    }/**/
 
     async function openPositionHandler({ token0Amt, token1Amt, liquidity }) {
         // TODO

@@ -37,10 +37,10 @@ function TabGroup(props) {
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <Lend depPool={props.depPool} token0={props.token0} token1={props.token1} />
+                    <Lend depPool={props.depPool} account={props.account} token0={props.token0} token1={props.token1} />
                 </TabPanel>
                 <TabPanel>
-                    <Borrow posManager={props.posManager} token0={props.token0} token1={props.token1}/>
+                    <Borrow posManager={props.posManager} account={props.account} token0={props.token0} token1={props.token1}/>
                 </TabPanel>
             </TabPanels>
         </Tabs>

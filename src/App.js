@@ -13,6 +13,7 @@ import truncateEthAddress from 'truncate-eth-address'
 
 function App() {
   const [account, setAccount] = useState("...");
+  const [accountAddr, setAccountAddr] = useState("");
   const [posManager, setPosManager] = useState({});
   const [depPool, setDepPool] = useState({});
   const [token0, setToken0] = useState({});
@@ -34,6 +35,7 @@ function App() {
       if (window.web3) {
           var accounts = await web3.eth.getAccounts();
           setAccount(truncateEthAddress(accounts[0]));
+          setAccountAddr(accounts[0]);
           const networkId = await web3.eth.net.getId();
 
           console.log("networkId >> " + networkId);
@@ -58,8 +60,9 @@ function App() {
               const symbol0 = await _token0.methods.symbol().call();
               const symbol1 = await _token1.methods.symbol().call();
               console.log("token1Addr >> " + token1Addr);
-              setToken0({address: token0Addr, symbol: symbol0});
-              setToken1({address: token1Addr, symbol: symbol1});
+
+              setToken0({address: token0Addr, symbol: symbol0, contract: _token0});
+              setToken1({address: token1Addr, symbol: symbol1, contract: _token1});
 
           } else {
               const posMgrNetworkData = PosManager.networks[networkId];
@@ -83,8 +86,8 @@ function App() {
                   const symbol0 = await _token0.methods.symbol().call();
                   const symbol1 = await _token1.methods.symbol().call();
                   console.log("token1Addr >> " + token1Addr);
-                  setToken0({address: token0Addr, symbol: symbol0});
-                  setToken1({address: token1Addr, symbol: symbol1});
+                  setToken0({address: token0Addr, symbol: symbol0, contract: _token0});
+                  setToken1({address: token1Addr, symbol: symbol1, contract: _token1});
               }
           }
 
@@ -102,7 +105,7 @@ function App() {
               <Route exact path={"/"}
                      element={<Home/>}/>
               <Route exact path={"/app"}
-                     element={<TabGroup token0={token0} token1={token1}
+                     element={<TabGroup account={accountAddr} token0={token0} token1={token1}
                          posManager={posManager} depPool={depPool}/>}/>
             </Routes>
           </header>

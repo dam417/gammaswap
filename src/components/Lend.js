@@ -9,9 +9,10 @@ import {
     Heading,
     FormErrorMessage,
     FormHelperText,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { constants } from 'ethers';
 
-function Lend({ token0, token1}) {
+function Lend({ account, depPool, token0, token1}) {
     // Declare a new state variable, which we'll call "count"
     /*const [tokenA, setTokenA] = useState(0);
      const [tokenB, setTokenB] = useState(0);
@@ -37,6 +38,14 @@ function Lend({ token0, token1}) {
     async function withdraw({ balance }) {
         // TODO
     }
+
+    async function approve(_token) {
+        console.log("approve() >> " + _token.symbol);
+        const res = await _token.contract.methods.approve(depPool._address, constants.MaxUint256).send({ from: account});
+        console.log("res >>");
+        console.log(res);
+    }
+
 
     return (
         /*Lend LP Form */
