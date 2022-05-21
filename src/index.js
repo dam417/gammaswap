@@ -1,14 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import Fonts from './Fonts';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+const theme = extendTheme({
+  fonts: {
+    heading: 'Neue Machina Ultrabold, sans-serif',
+    body: 'Neue Machina Regular, sans-serif',
+  },
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
+      <Fonts />
       <App />
     </ChakraProvider>
   </React.StrictMode>
