@@ -33,15 +33,30 @@ function App() {
       setAccount(truncateEthAddress(accounts[0]));
       const networkId = await web3.eth.net.getId();
 
-      const posMgrNetworkData = PosManager.networks[networkId];
-      if (posMgrNetworkData) {
-          const _posManager = new web3.eth.Contract(PosManager.abi, posMgrNetworkData.address.toString());
+      console.log("networkId >> " + networkId);
+      if(networkId == 3) {
+          const _posManager = new web3.eth.Contract(PosManager.abi, "0x22974D4B8642b40B21b2025083396fDa3aC33492");
           setPosManager(_posManager);
-      }
-      const depPoolNetworkData = DepPool.networks[networkId];
-      if (depPoolNetworkData) {
-          const _depPool = new web3.eth.Contract(DepPool.abi, depPoolNetworkData.address.toString());
+          console.log("posManager >>");
+          console.log(_posManager);
+
+          const _depPool = new web3.eth.Contract(DepPool.abi, "0xdCC4E8c667419FCfC085b06e9939efD742824a41");
           setDepPool(_depPool);
+          console.log("depPool >>");
+          console.log(_depPool);
+          const token1Addr = await _depPool.methods.token1().call();
+          console.log("token1Addr >> " + token1Addr);
+      } else {
+          const posMgrNetworkData = PosManager.networks[networkId];
+          if (posMgrNetworkData) {
+              const _posManager = new web3.eth.Contract(PosManager.abi, posMgrNetworkData.address.toString());
+              setPosManager(_posManager);
+          }
+          const depPoolNetworkData = DepPool.networks[networkId];
+          if (depPoolNetworkData) {
+              const _depPool = new web3.eth.Contract(DepPool.abi, depPoolNetworkData.address.toString());
+              setDepPool(_depPool);
+          }
       }
     }
 
