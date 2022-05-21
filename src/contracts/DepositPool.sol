@@ -73,6 +73,11 @@ contract DepositPool is IDepositPool, IERC20 {
         feeTo = _feeTo;
     }
 
+    function setFee(uint256 _fee) external {
+        require(msg.sender == owner, "DepositPool: SET_FEE_TO_FORBIDDEN");
+        fee = _fee;
+    }
+
     function balanceOf(address account) external override view returns (uint256 bal) {
         bal = _balanceOf[account];
     }

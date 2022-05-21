@@ -92,18 +92,22 @@ import { poolFixture, testPoolFixture } from './shared/fixtures';
              //console.log(_tx);
          }
 
-        it('getAndUpdateLastFeeIndex', async () => {
+        /*it('getAndUpdateLastFeeIndex', async () => {
              const ONE = expandTo18Decimals(1);
 
              const poolOwner = await pool.owner();
              console.log("poolOwner >>");
              console.log(poolOwner);
-            console.log("accounts[0] >>");
-            console.log(accounts[0]);
+             console.log("accounts[0] >>");
+             console.log(accounts[0]);
 
              await pool.setFeeTo(accounts[2], { from: accounts[0] });
              const feeTo = await pool.feeTo();
              assert.equal(feeTo.toString(), accounts[2]);
+
+            await pool.setFee(0, { from: accounts[0] });
+            const _fee = await pool.fee();
+            assert.equal(_fee.toString(), "0");
 
              const feeToPoolBal = await pool.balanceOf(accounts[2]);
              assert.equal(feeToPoolBal.toString(), 0);
@@ -140,25 +144,26 @@ import { poolFixture, testPoolFixture } from './shared/fixtures';
              //await _tx0.wait();
 
              const accFeeIndex2 = await pool.accFeeIndex();
+             const _accFeeIndex2 = BigNumber.from(accFeeIndex2.toString());
 
              const token0Amount = expandTo18Decimals(1);
              const token1Amount = expandTo18Decimals(4);
              await addLiquidity(token0Amount, token1Amount, accounts[0]);
 
              const borrowedInvariant3 = await pool.BORROWED_INVARIANT();
+             const _borrowedInvariant3 = BigNumber.from(borrowedInvariant3.toString());
              const accFeeIndex3 = await pool.accFeeIndex();
+             const _accFeeIndex3 = BigNumber.from(accFeeIndex3.toString());
 
              const initBorrowedInvariant = expandTo18Decimals(2);
-             console.log("accFeeIndex3 >>");
-             console.log(accFeeIndex3.toString());
-             console.log("accFeeIndex2 >>");
-             console.log(accFeeIndex2.toString());
-             /*const nextBorrowedInvariant = initBorrowedInvariant.mul(accFeeIndex3).div(accFeeIndex2);
+             const nextBorrowedInvariant = initBorrowedInvariant.mul(_accFeeIndex3).div(_accFeeIndex2);
 
-             /*assert.equal(borrowedInvariant3.div(10).toString(), nextBorrowedInvariant.div(10));
 
-             const lastFeeIndex2 = accFeeIndex3.mul(ONE).div(accFeeIndex2);
-             const lastFeeIndex =  borrowedInvariant3.mul(ONE).div(initBorrowedInvariant);
+
+             assert.equal(_borrowedInvariant3.div(10).toString(), nextBorrowedInvariant.div(10));
+
+             const lastFeeIndex2 = _accFeeIndex3.mul(ONE).div(_accFeeIndex2);
+             const lastFeeIndex =  _borrowedInvariant3.mul(ONE).div(initBorrowedInvariant);
 
              assert.equal(lastFeeIndex.div(10).toString(), lastFeeIndex2.div(10).toString());
 
@@ -169,13 +174,13 @@ import { poolFixture, testPoolFixture } from './shared/fixtures';
              const totalUniSupply = await uniPair.totalSupply();
              const uniShareInvariant = poolUniPairBal.mul(uniInvariant).div(totalUniSupply);
              const factor = lastFeeIndex.sub(ONE).mul(BigNumber.from(devFee.toString())).div(lastFeeIndex);
-             const acctGrowth = factor.mul(borrowedInvariant3).div(borrowedInvariant3.add(uniShareInvariant));
+             const acctGrowth = factor.mul(_borrowedInvariant3).div(_borrowedInvariant3.add(uniShareInvariant));
              const totalPoolSharesSupply = await pool.totalSupply();
-             const expNewDevShares = totalPoolSharesSupply.mul(acctGrowth).div(ONE.sub(acctGrowth));
+             const expNewDevShares = BigNumber.from(totalPoolSharesSupply.toString()).mul(acctGrowth).div(ONE.sub(acctGrowth));
              const feeToPoolBal0 = await pool.balanceOf(accounts[2]);
 
-             assert.equal(feeToPoolBal0.div(10000).toString(), expNewDevShares.div(10000).toString());/**/
-         });
+             assert.equal(BigNumber.from(feeToPoolBal0.toString()).div(10000).toString(), expNewDevShares.div(10000).toString());
+         });/**/
 
          /*it('getLastFeeIndex:hasUniTradesAndLoans', async () => {
              const ONE = expandTo18Decimals(1);
@@ -190,7 +195,7 @@ import { poolFixture, testPoolFixture } from './shared/fixtures';
              const liquidity = expandTo18Decimals(2);
 
              const _tx0 = await pool.openPosition(liquidity);
-             await _tx0.wait();
+             //await _tx0.wait();
 
              const YEAR_BLOCK_COUNT = 2252571;
 
@@ -323,273 +328,226 @@ import { poolFixture, testPoolFixture } from './shared/fixtures';
              assert.equal(res1._lastFeeIndex.toString(), lastUniFeeIndex1.toString());
          });/**/
 
-     /*it('getLastFeeIndex:NoUniTrades', async () => {
+         /*it('getLastFeeIndex:NoUniTrades', async () => {
 
-     const ONE = expandTo18Decimals(1);
+             const ONE = expandTo18Decimals(1);
 
-     const _res = await pool.getLastFeeIndex();
+             const _res = await pool.getLastFeeIndex();
 
-     assert.equal(_res._accFeeIndex.toString(), ONE.toString());
-     assert.equal(_res._lastUniInvariant.toString(), 0);
-     assert.equal(_res._lastUniTotalSupply.toString(), 0);
-     assert.equal(_res._lastFeeIndex.toString(), ONE.toString());
+             assert.equal(_res._accFeeIndex.toString(), ONE.toString());
+             assert.equal(_res._lastUniInvariant.toString(), 0);
+             assert.equal(_res._lastUniTotalSupply.toString(), 0);
+             assert.equal(_res._lastFeeIndex.toString(), ONE.toString());
 
-     await pool.setBaseRate(constants.Zero);//We already know BASE_RATE works
+             await pool.setBaseRate(constants.Zero);//We already know BASE_RATE works
 
-     await setUp();
+             await setUp();
 
-     const res = await pool.getLastFeeIndex();
+             const res = await pool.getLastFeeIndex();
 
-     const expLastUniInvariant = expandTo18Decimals(36);
-     const expLastUniTotalSupply = expandTo18Decimals(6);
+             const expLastUniInvariant = expandTo18Decimals(36);
+             const expLastUniTotalSupply = expandTo18Decimals(6);
 
-     assert.equal(res._accFeeIndex.toString(), ONE.toString());
-     assert.equal(res._lastUniInvariant.toString(), expLastUniInvariant.toString());
-     assert.equal(res._lastUniTotalSupply.toString(), expLastUniTotalSupply.toString());
-     assert.equal(res._lastFeeIndex.toString(), ONE.toString());
+             assert.equal(res._accFeeIndex.toString(), ONE.toString());
+             assert.equal(res._lastUniInvariant.toString(), expLastUniInvariant.toString());
+             assert.equal(res._lastUniTotalSupply.toString(), expLastUniTotalSupply.toString());
+             assert.equal(res._lastFeeIndex.toString(), ONE.toString());
 
-     const liquidity = expandTo18Decimals(2);
+             const liquidity = expandTo18Decimals(2);
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const YEAR_BLOCK_COUNT = 2252571;
+             const YEAR_BLOCK_COUNT = 2252571;
 
-     await mineBlock(web3, Math.floor(Date.now()/1000));
+             await mineBlock(web3, Math.floor(Date.now()/1000));
 
-     const lastBlock = await pool.LAST_BLOCK_NUMBER();
-     const blockNum = await web3.eth.getBlockNumber();
-     const blockDiff = blockNum - lastBlock;
-     const borrowRate = await pool.getBorrowRate();
+             const lastBlock = await pool.LAST_BLOCK_NUMBER();
+             const blockNum = await web3.eth.getBlockNumber();
+             const blockDiff = blockNum - lastBlock;
+             const borrowRate = await pool.getBorrowRate();
 
-     const expLastFeeIndex = ONE.add(BigNumber.from(borrowRate.toString()).mul(blockDiff).div(YEAR_BLOCK_COUNT));
-     const expAccFeeIndex = expLastFeeIndex;
+             const expLastFeeIndex = ONE.add(BigNumber.from(borrowRate.toString()).mul(blockDiff).div(YEAR_BLOCK_COUNT));
+             const expAccFeeIndex = expLastFeeIndex;
 
-     const res0 = await pool.getLastFeeIndex();
+             const res0 = await pool.getLastFeeIndex();
 
-     assert.equal(res0._accFeeIndex.toString(), expAccFeeIndex.toString());
-     assert.equal(res0._lastUniInvariant.toString(), BigNumber.from(expLastUniInvariant.toString()).sub(expandTo18Decimals(20)));
-     assert.equal(res0._lastUniTotalSupply.toString(), BigNumber.from(expLastUniTotalSupply.toString()).sub(expandTo18Decimals(2)));
-     assert.equal(res0._lastFeeIndex.toString(), expLastFeeIndex.toString());
+             assert.equal(res0._accFeeIndex.toString(), expAccFeeIndex.toString());
+             assert.equal(res0._lastUniInvariant.toString(), BigNumber.from(expLastUniInvariant.toString()).sub(expandTo18Decimals(20)));
+             assert.equal(res0._lastUniTotalSupply.toString(), BigNumber.from(expLastUniTotalSupply.toString()).sub(expandTo18Decimals(2)));
+             assert.equal(res0._lastFeeIndex.toString(), expLastFeeIndex.toString());
 
-     const token0Amount = expandTo18Decimals(1);
-     const token1Amount = expandTo18Decimals(4);
-     await addLiquidity(token0Amount, token1Amount, accounts[0]);
+             const token0Amount = expandTo18Decimals(1);
+             const token1Amount = expandTo18Decimals(4);
+             await addLiquidity(token0Amount, token1Amount, accounts[0]);
 
-     await mineBlock(web3, Math.floor(Date.now()/1000));
-     await mineBlock(web3, Math.floor(Date.now()/1000));
-     await mineBlock(web3, Math.floor(Date.now()/1000));
+             await mineBlock(web3, Math.floor(Date.now()/1000));
+             await mineBlock(web3, Math.floor(Date.now()/1000));
+             await mineBlock(web3, Math.floor(Date.now()/1000));
 
-     const lastBlock1 = await pool.LAST_BLOCK_NUMBER();
-     const blockNum1 = await web3.eth.getBlockNumber();
-     const blockDiff1 = blockNum1 - lastBlock1;
-     const borrowRate1 = await pool.getBorrowRate();
-     const accFeeIndex = await pool.accFeeIndex();
+             const lastBlock1 = await pool.LAST_BLOCK_NUMBER();
+             const blockNum1 = await web3.eth.getBlockNumber();
+             const blockDiff1 = blockNum1 - lastBlock1;
+             const borrowRate1 = await pool.getBorrowRate();
+             const accFeeIndex = await pool.accFeeIndex();
 
-     const expLastFeeIndex1 = ONE.add(BigNumber.from(borrowRate1.toString()).mul(blockDiff1).div(YEAR_BLOCK_COUNT));
-     const expAccFeeIndex1 = BigNumber.from(accFeeIndex.toString()).mul(expLastFeeIndex1).div(ONE);
+             const expLastFeeIndex1 = ONE.add(BigNumber.from(borrowRate1.toString()).mul(blockDiff1).div(YEAR_BLOCK_COUNT));
+             const expAccFeeIndex1 = BigNumber.from(accFeeIndex.toString()).mul(expLastFeeIndex1).div(ONE);
 
-     const res1 = await pool.getLastFeeIndex();
+             const res1 = await pool.getLastFeeIndex();
 
-     assert.equal(res1._accFeeIndex.toString(), expAccFeeIndex1.toString());
-     assert.equal(res1._lastUniInvariant.toString(), expLastUniInvariant.toString());
-     assert.equal(res1._lastUniTotalSupply.toString(), expLastUniTotalSupply.toString());
-     assert.equal(res1._lastFeeIndex.toString(), expLastFeeIndex1.toString());
-     });
+             assert.equal(res1._accFeeIndex.toString(), expAccFeeIndex1.toString());
+             assert.equal(res1._lastUniInvariant.toString(), expLastUniInvariant.toString());
+             assert.equal(res1._lastUniTotalSupply.toString(), expLastUniTotalSupply.toString());
+             assert.equal(res1._lastFeeIndex.toString(), expLastFeeIndex1.toString());
+         });/**/
 
-     it('getBorrowRate:MoreThanOptimal', async () => {
-     await setUp();
+         /*it('getBorrowRate:MoreThanOptimal', async () => {
+             await setUp();
 
-     const optimalUtilRate = expandTo18Decimals(2).div(10);
-     await pool.setOptimalUtilizationRate(optimalUtilRate);//normally 80%
+             const optimalUtilRate = expandTo18Decimals(2).div(10);
+             await pool.setOptimalUtilizationRate(optimalUtilRate);//normally 80%
 
-     const borrowRate0 = await pool.getBorrowRate();
-     const expBorrowRate0 = expandTo18Decimals(1).div(100);
+             const borrowRate0 = await pool.getBorrowRate();
+             const expBorrowRate0 = expandTo18Decimals(1).div(100);
 
-     assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
+             assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
 
-     const liquidity = expandTo18Decimals(2);
+             const liquidity = expandTo18Decimals(2);
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const borrowRate = await pool.getBorrowRate();
-     const expBorrowRate = expandTo18Decimals(1385).div(1000);
+             const borrowRate = await pool.getBorrowRate();
+             const expBorrowRate = expandTo18Decimals(1385).div(1000);
 
-     assert.equal(borrowRate.toString(), expBorrowRate.toString());
-     });
+             assert.equal(borrowRate.toString(), expBorrowRate.toString());
+         });/**/
 
-     it('getBorrowRate:Optimal', async () => {
-     await setUp();
+         /*it('getBorrowRate:Optimal', async () => {
+             await setUp();
 
-     const optimalUtilRate = expandTo18Decimals(5).div(10);
-     await pool.setOptimalUtilizationRate(optimalUtilRate);//normally 80%
+             const optimalUtilRate = expandTo18Decimals(5).div(10);
+             await pool.setOptimalUtilizationRate(optimalUtilRate);//normally 80%
 
-     const borrowRate0 = await pool.getBorrowRate();
-     const expBorrowRate0 = expandTo18Decimals(1).div(100);
+             const borrowRate0 = await pool.getBorrowRate();
+             const expBorrowRate0 = expandTo18Decimals(1).div(100);
 
-     assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
+             assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
 
-     const liquidity = expandTo18Decimals(2);
+             const liquidity = expandTo18Decimals(2);
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const borrowRate = await pool.getBorrowRate();
-     const expBorrowRate = expandTo18Decimals(101).div(100);
+             const borrowRate = await pool.getBorrowRate();
+             const expBorrowRate = expandTo18Decimals(101).div(100);
 
-     assert.equal(borrowRate.toString(), expBorrowRate.toString());
-     });
+             assert.equal(borrowRate.toString(), expBorrowRate.toString());
+         });/**/
 
-     it('getBorrowRate:lessThanOptimal', async () => {
-     await setUp();
+         /*it('getBorrowRate:lessThanOptimal', async () => {
+             await setUp();
 
-     const borrowRate0 = await pool.getBorrowRate();
-     const expBorrowRate0 = expandTo18Decimals(1).div(100);
+             const borrowRate0 = await pool.getBorrowRate();
+             const expBorrowRate0 = expandTo18Decimals(1).div(100);
 
-     assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
+             assert.equal(borrowRate0.toString(), expBorrowRate0.toString());
 
-     const liquidity = expandTo18Decimals(2);
+             const liquidity = expandTo18Decimals(2);
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const borrowRate = await pool.getBorrowRate();
-     const expBorrowRate = expandTo18Decimals(635).div(1000);
+             const borrowRate = await pool.getBorrowRate();
+             const expBorrowRate = expandTo18Decimals(635).div(1000);
 
-     assert.equal(borrowRate.toString(), expBorrowRate.toString());
-     });
+             assert.equal(borrowRate.toString(), expBorrowRate.toString());
+         });/**/
 
-     it('getUtilizationRate:uniHasLiquidity', async () => {
-     await setUp();
+         /*it('getUtilizationRate:uniHasLiquidity', async () => {
+             await setUp();
 
-     const start_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const start_uniBal = await uniPair.balanceOf(pool.address);
-     const start_utilizationRate = await pool.getUtilizationRate();
+             const start_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
+             const start_uniBal = await uniPair.balanceOf(pool.address);
+             const start_utilizationRate = await pool.getUtilizationRate();
 
-     const liquidity = expandTo18Decimals(2);
+             const liquidity = expandTo18Decimals(2);
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const mid_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const mid_uniBal = await uniPair.balanceOf(pool.address);
-     const mid_utilizationRate = await pool.getUtilizationRate();
+             const mid_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
+             const mid_uniBal = await uniPair.balanceOf(pool.address);
+             const mid_utilizationRate = await pool.getUtilizationRate();
 
-     const exp50pct = expandTo18Decimals(5).div(10);
+             const exp50pct = expandTo18Decimals(5).div(10);
 
-     assert.equal(mid_UNI_LP_BORROWED.toString(), liquidity.toString());
-     assert.equal(mid_uniBal.toString(), BigNumber.from(start_uniBal).sub(liquidity).toString());
-     assert.equal(mid_utilizationRate.toString(), exp50pct.toString());
+             assert.equal(mid_UNI_LP_BORROWED.toString(), liquidity.toString());
+             assert.equal(mid_uniBal.toString(), BigNumber.from(start_uniBal).sub(liquidity).toString());
+             assert.equal(mid_utilizationRate.toString(), exp50pct.toString());
 
-     const token0Amount = expandTo18Decimals(1);
-     const token1Amount = expandTo18Decimals(4);
-     await token0.transfer(pool.address, token0Amount);
-     await token1.transfer(pool.address, token1Amount);
+             const token0Amount = expandTo18Decimals(1);
+             const token1Amount = expandTo18Decimals(4);
+             await token0.transfer(pool.address, token0Amount);
+             await token1.transfer(pool.address, token1Amount);
 
-     const _tx1 = await pool.closePosition(liquidity);
-     await _tx1.wait();
+             const _tx1 = await pool.closePosition(liquidity);
+             //await _tx1.wait();
 
-     const end_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const end_uniBal = await uniPair.balanceOf(pool.address);
-     const end_utilizationRate = await pool.getUtilizationRate();
+             const end_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
+             const end_uniBal = await uniPair.balanceOf(pool.address);
+             const end_utilizationRate = await pool.getUtilizationRate();
 
-     assert.equal(end_UNI_LP_BORROWED.toString(), start_UNI_LP_BORROWED.toString());
-     assert.equal(end_uniBal.toString(), start_uniBal.toString());
-     assert.equal(end_utilizationRate.toString(), start_utilizationRate.toString());
-     });
+             assert.equal(end_UNI_LP_BORROWED.toString(), start_UNI_LP_BORROWED.toString());
+             assert.equal(end_uniBal.toString(), start_uniBal.toString());
+             assert.equal(end_utilizationRate.toString(), start_utilizationRate.toString());
+         });/**/
 
-     it('closePositionWithLiquidity:uniHasLiquidity', async () => {
-     await setUp();
+         /*it('closePosition:uniHasLiquidity', async () => {
+             await setUp();
 
-     const token0Amount = expandTo18Decimals(1);
-     const token1Amount = expandTo18Decimals(4);
-     await addToUniLiquidity(token0Amount, token1Amount, accounts[0]);
+             await pool.setBaseRate(constants.Zero);
+             await pool.setSlope1(constants.Zero);
+             await pool.setSlope2(constants.Zero);
 
-     await pool.setBaseRate(constants.Zero);
-     await pool.setSlope1(constants.Zero);
-     await pool.setSlope2(constants.Zero);
+             const liquidity = expandTo18Decimals(2);
 
-     const liquidity = expandTo18Decimals(2);
+             const _tx0 = await pool.openPosition(liquidity);
+             //await _tx0.wait();
 
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
+             const token0Amount = expandTo18Decimals(2);
+             const token1Amount = expandTo18Decimals(8);
+             await token0.transfer(pool.address, token0Amount);
+             await token1.transfer(pool.address, token1Amount);
 
-     await uniPair.transfer(pool.address, liquidity);
+             const start_totalUniLiquidity = await pool.totalUniLiquidity();
+             const start_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
+             const start_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
+             const start_token0Bal = await token0.balanceOf(uniPair.address);
+             const start_token1Bal = await token1.balanceOf(uniPair.address);
+             const start_userToken0Bal = await token0.balanceOf(accounts[0]);
+             const start_userToken1Bal = await token1.balanceOf(accounts[0]);
 
-     const start_totalUniLiquidity = await pool.totalUniLiquidity();
-     const start_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const start_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
-     const start_token0Bal = await token0.balanceOf(uniPair.address);
-     const start_token1Bal = await token1.balanceOf(uniPair.address);
-     const start_userToken0Bal = await token0.balanceOf(accounts[0]);
-     const start_userToken1Bal = await token1.balanceOf(accounts[0]);
+             const _tx1 = await pool.closePosition(liquidity);
+             //await _tx1.wait();
 
-     const _tx1 = await pool.closePositionWithLiquidity();
-     await _tx1.wait();
+             const end_totalUniLiquidity = await pool.totalUniLiquidity();
+             const end_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
+             const end_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
+             const end_token0Bal = await token0.balanceOf(uniPair.address);
+             const end_token1Bal = await token1.balanceOf(uniPair.address);
+             const end_userToken0Bal = await token0.balanceOf(accounts[0]);
+             const end_userToken1Bal = await token1.balanceOf(accounts[0]);
 
-     const end_totalUniLiquidity = await pool.totalUniLiquidity();
-     const end_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const end_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
-     const end_token0Bal = await token0.balanceOf(uniPair.address);
-     const end_token1Bal = await token1.balanceOf(uniPair.address);
-     const end_userToken0Bal = await token0.balanceOf(accounts[0]);
-     const end_userToken1Bal = await token1.balanceOf(accounts[0]);
-
-     assert.equal(end_userToken0Bal.toString(), BigNumber.from(start_userToken0Bal.toString()));
-     assert.equal(end_userToken1Bal.toString(), BigNumber.from(start_userToken1Bal.toString()));
-     assert.equal(end_token0Bal.toString(), BigNumber.from(start_token0Bal.toString()));
-     assert.equal(end_token1Bal.toString(), BigNumber.from(start_token1Bal.toString()));
-
-     assert.equal(end_totalUniLiquidity.toString(), BigNumber.from(start_totalUniLiquidity.toString()).add(liquidity).toString());
-     assert.equal(end_UNI_LP_BORROWED.toString(), BigNumber.from(start_UNI_LP_BORROWED.toString()).sub(liquidity).toString());
-     assert.equal(end_BORROWED_INVARIANT.toString(), BigNumber.from(start_BORROWED_INVARIANT.toString()).sub(liquidity).toString());
-     });
-
-     it('closePosition:uniHasLiquidity', async () => {
-     await setUp();
-
-     await pool.setBaseRate(constants.Zero);
-     await pool.setSlope1(constants.Zero);
-     await pool.setSlope2(constants.Zero);
-
-     const liquidity = expandTo18Decimals(2);
-
-     const _tx0 = await pool.openPosition(liquidity);
-     await _tx0.wait();
-
-     const token0Amount = expandTo18Decimals(2);
-     const token1Amount = expandTo18Decimals(8);
-     await token0.transfer(pool.address, token0Amount);
-     await token1.transfer(pool.address, token1Amount);
-
-     const start_totalUniLiquidity = await pool.totalUniLiquidity();
-     const start_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const start_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
-     const start_token0Bal = await token0.balanceOf(uniPair.address);
-     const start_token1Bal = await token1.balanceOf(uniPair.address);
-     const start_userToken0Bal = await token0.balanceOf(accounts[0]);
-     const start_userToken1Bal = await token1.balanceOf(accounts[0]);
-
-     const _tx1 = await pool.closePosition(liquidity);
-     await _tx1.wait();
-
-     const end_totalUniLiquidity = await pool.totalUniLiquidity();
-     const end_UNI_LP_BORROWED = await pool.UNI_LP_BORROWED();
-     const end_BORROWED_INVARIANT = await pool.BORROWED_INVARIANT();
-     const end_token0Bal = await token0.balanceOf(uniPair.address);
-     const end_token1Bal = await token1.balanceOf(uniPair.address);
-     const end_userToken0Bal = await token0.balanceOf(accounts[0]);
-     const end_userToken1Bal = await token1.balanceOf(accounts[0]);
-
-     assert.equal(end_userToken0Bal.toString(), BigNumber.from(start_userToken0Bal.toString()).add(token0Amount.div(2)));
-     assert.equal(end_userToken1Bal.toString(), BigNumber.from(start_userToken1Bal.toString()).add(token1Amount.div(2)));
-     assert.equal(end_token0Bal.toString(), BigNumber.from(start_token0Bal.toString()).add(token0Amount.div(2)));
-     assert.equal(end_token1Bal.toString(), BigNumber.from(start_token1Bal.toString()).add(token1Amount.div(2)));
-     assert.equal(end_totalUniLiquidity.toString(), BigNumber.from(start_totalUniLiquidity.toString()).add(liquidity));
-     assert.equal(end_UNI_LP_BORROWED.toString(), BigNumber.from(start_UNI_LP_BORROWED.toString()).sub(liquidity).toString());
-     assert.equal(end_BORROWED_INVARIANT.toString(), BigNumber.from(start_BORROWED_INVARIANT.toString()).sub(liquidity).toString());
-     });/**/
+             assert.equal(end_userToken0Bal.toString(), BigNumber.from(start_userToken0Bal.toString()).add(token0Amount.div(2)));
+             assert.equal(end_userToken1Bal.toString(), BigNumber.from(start_userToken1Bal.toString()).add(token1Amount.div(2)));
+             assert.equal(end_token0Bal.toString(), BigNumber.from(start_token0Bal.toString()).add(token0Amount.div(2)));
+             assert.equal(end_token1Bal.toString(), BigNumber.from(start_token1Bal.toString()).add(token1Amount.div(2)));
+             assert.equal(end_totalUniLiquidity.toString(), BigNumber.from(start_totalUniLiquidity.toString()).add(liquidity));
+             assert.equal(end_UNI_LP_BORROWED.toString(), BigNumber.from(start_UNI_LP_BORROWED.toString()).sub(liquidity).toString());
+             assert.equal(end_BORROWED_INVARIANT.toString(), BigNumber.from(start_BORROWED_INVARIANT.toString()).sub(liquidity).toString());
+         });/**/
 
 
 
