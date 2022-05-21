@@ -1,3 +1,4 @@
+import { Heading, Container, Stack, Text } from '@chakra-ui/react';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
@@ -15,9 +16,14 @@ function Home(props) {
     }/**/
 
     return (
-        <div id="content">
-            hello
-        </div>
+        <Container>
+            <Stack>
+                <Heading>GammaSwap</Heading>
+                <Text>
+                Leveraging Uniswap for Better Pool Performance.
+                </Text>
+            </Stack>
+        </Container>
     )
 
 }
