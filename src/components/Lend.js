@@ -13,7 +13,7 @@ import {
     FormHelperText,
 } from '@chakra-ui/react'
 
-function Lend(props) {
+function Lend({ token0, token1}) {
     // Declare a new state variable, which we'll call "count"
     /*const [tokenA, setTokenA] = useState(0);
      const [tokenB, setTokenB] = useState(0);
@@ -26,24 +26,51 @@ function Lend(props) {
      navigate(path);
      }/**/
 
+    const [token0Amt, setToken0Amt] = useState(0);
+    const [token1Amt, setToken1Amt] = useState(0);
+    const [liquidityAmt, setLiquidityAmt] = useState(0);
+
+    function deposit() {
+        console.log("deposit() >> ");
+        console.log("token0Amt >>");
+        console.log(token0Amt.value);
+        console.log("token1Amt >>");
+        console.log(token1Amt.value);
+    }
+
+    function withdraw() {
+        console.log("withdraw() >> ");
+        console.log("liquidityAmt >>");
+        console.log(liquidityAmt.value);
+    }
+
     return (
         /*Lend LP Form */
         <div>
           <Heading> Lend </Heading>
             <FormControl boxShadow='lg'>
                 <Heading size='md'>Balance</Heading>
-                <FormLabel htmlFor='token-0'>Token 0</FormLabel>
-                <Input placeholder='amount' id='token-0' type='text' />
-                <FormLabel mt={5} htmlFor='token-1'>Token 1</FormLabel>
-                <Input placeholder='amount' id='token-1' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
+                <FormLabel htmlFor='token-0'>{token0.symbol}</FormLabel>
+                <Input placeholder='amount' id='token-0' type='text'
+                       ref={(input) => {
+                           setToken0Amt(input)
+                       }} />
+                <FormLabel mt={5} htmlFor='token-1'>{token1.symbol}</FormLabel>
+                <Input placeholder='amount' id='token-1' type='text'
+                       ref={(input) => {
+                           setToken1Amt(input)
+                       }}  />
+                <Button my={5} colorScheme='blue' onClick={deposit}>Submit</Button>
             </FormControl>
 
             <FormControl boxShadow='lg' mt={10}>
                 <Heading size='md'>Withdraw</Heading>
                 <FormLabel mt={5} htmlFor='withdraw'></FormLabel>
-                    <Input id='withdraw' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
+                    <Input id='withdraw' type='text'
+                           ref={(input) => {
+                               setLiquidityAmt(input)
+                           }} />
+                <Button my={5} colorScheme='blue' onClick={withdraw}>Submit</Button>
             </FormControl>
         </div>
     )

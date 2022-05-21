@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form';
+import * as Web3 from "web3/dist/web3.min.js";
+import truncateEthAddress from 'truncate-eth-address';
 import {
     FormControl,
     FormLabel,
@@ -10,37 +12,92 @@ import {
     FormHelperText,
 } from '@chakra-ui/react'
 
-function Borrow() {
+function Borrow({ token0, token1, posManager }) {
     // Declare a new state variable, which we'll call "count"
-    /*const [tokenA, setTokenA] = useState(0);
-     const [tokenB, setTokenB] = useState(0);
+    // const [tokenA, setTokenA] = useState(0);
+    // const [tokenB, setTokenB] = useState(0);
 
-     let navigate = useNavigate();
+    // let navigate = useNavigate();
 
-     const routeChange = (id) =>{
-     console.log("routeChange >> " + id);
-     let path = `/pool/${id}`;
-     navigate(path);
-     }/**/
+    // const routeChange = (id) =>{
+    // console.log("routeChange >> " + id);
+    // let path = `/pool/${id}`;
+    // navigate(path);
+    // }
+    const [toAddr, setToAddr] = useState("...");
+    const { register, handleSubmit } = useForm();
+
+    useEffect(() => {
+        loadAddresses()
+    }, [])
+
+    async function loadAddresses() {
+        if (window.web3) {
+            const accounts = await web3.eth.getAccounts();
+            setToAddr(truncateEthAddress(accounts[0]));
+        }
+    }
+
+    async function openPositionHandler({ token0Amt, token1Amt, liquidity}) {
+        const createPosition = await posManager.methods.openPosition(
+            token0.address,
+            token1.address,
+            token0Amt,
+            token1Amt,
+            liquidity,
+            toAddr,  
+        ).call();
+    }
 
     return (
         <>
-            <FormControl boxShadow='lg'>
-                <Heading size='md'>Open</Heading>
-                <FormLabel htmlFor='token-0'>Token 0</FormLabel>
-                <Input placeholder='amount' id='token-0' type='text' />
-                <FormLabel mt={5} htmlFor='token-1'>Token 1</FormLabel>
-                <Input placeholder='amount' id='token-1' type='text' />
-                <FormLabel mt={5} htmlFor='liquidity'>Liquidity</FormLabel>
-                <Input placeholder='amount' id='liquidity' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
-            </FormControl>
-            <FormControl boxShadow='lg' mt={10}>
-                <Heading size='md'>Repay</Heading>
-                <FormLabel mt={5} htmlFor='liquidity'>Liquidity</FormLabel>
-                    <Input id='liquidity' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
-            </FormControl>
+            <form onSubmit={handleSubmit(openPositionHandler)}>
+                <FormControl boxShadow='lg'>
+                    <Heading size='md'>Open</Heading>
+                    <FormLabel htmlFor='token0'>{token0.symbol}</FormLabel>
+                    <Input
+                        placeholder='amount'
+                        id='token0'
+                        type='number'
+                        {...register('token0Amt')}
+                    />
+                    <FormLabel mt={5} htmlFor='token1'>{token1.symbol}</FormLabel>
+                    <Input
+                        placeholder='amount'
+                        id='token1'
+                        type='number'
+                        {...register('token1Amt')}
+                    />
+                    <FormLabel mt={5} htmlFor='liquidity'>Liquidity</FormLabel>
+                    <Input
+                        placeholder='amount'
+                        id='liquidity'
+                        type='number'
+                        {...register('liquidity')}
+                    />
+                    <Button my={5} colorScheme='blue' type='submit'>Submit</Button>
+                </FormControl>
+                <FormControl boxShadow='lg' mt={10}>
+                    <Heading size='md'>Repay</Heading>
+                    <FormLabel
+                        mt={5}
+                        htmlFor='liquidity'
+                    >
+                        Liquidity
+                    </FormLabel>
+                        <Input
+                            id='liquidity'
+                            type='number' 
+                        />
+                    <Button
+                        my={5}
+                        colorScheme='blue'
+                        type='submit'
+                    >
+                        Submit
+                    </Button>
+                </FormControl>
+            </form>
         </>
     );
 
