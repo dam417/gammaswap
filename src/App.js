@@ -1,8 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
-import {BrowserRouter as Router, Routes, Switch, Route} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import About from './components/About';
 import TabGroup from './components/TabGroup';
 import React, { useState, useEffect } from 'react'
 import PosManager from './abis/PositionManager.json';
@@ -97,23 +98,26 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <div className="App">
         <Navbar account={account} />
-        <div className="App">
-          <header className="App-header">
-            <Routes>
-              <Route exact path={"/"}
-                     element={<Home/>}/>
-              <Route exact path={"/app"}
-                     element={<TabGroup account={accountAddr} token0={token0} token1={token1}
-                         posManager={posManager} depPool={depPool}/>}/>
-            </Routes>
-          </header>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />}/>
+          <Route path="/about" element={<About />}/>
+          <Route
+            path="/app"
+            element={
+              <TabGroup
+                account={accountAddr}
+                token0={token0}
+                token1={token1}
+                posManager={posManager}
+                depPool={depPool}
+              />
+            }
+          />
+        </Routes>
       </div>
     </Router>
-
-
   );
 }
 

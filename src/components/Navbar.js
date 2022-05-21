@@ -43,29 +43,39 @@ function Navbar(props) {
     }
 
     return (
-      <div className="nav-bar">
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-          <h1 
-            className="navbar-brand col-sm-3 col-md-2 mr-0"
-          >
-              <a style={homeLink} onClick={() => { routeChange('/')}}>
-                GammaSwap V0
-              </a>
-          </h1>
-        </nav>
-          <div className="wallet">
-              {props.account}
-          </div>
-          {loc.pathname == '/' ?
-              <a onClick={() => {
-                  routeChange('/app')
-              }}>
-                  <Button>
-                      Launch App
-                  </Button>
-              </a> : <div></div>
-          }
-      </div>
+        <div className="nav-bar">
+            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+                <h1 className="navbar-brand col-sm-3 col-md-2 mr-0">
+                    <Link to="/">
+                        GammaSwap V0
+                    </Link>
+                </h1>
+                <div>
+                    <Link to="/about">
+                        About
+                    </Link>
+                </div>
+                <div>
+                    <Link to="/app">
+                        Launch
+                    </Link>
+                </div>
+                <div className="wallet">
+                    {props.account}
+                </div>
+            {/* {loc.pathname == '/'
+            ?
+            <Button
+                onClick={() => {
+                    routeChange('/app')
+                }}
+            >
+                Launch
+            </Button> 
+            : <div></div>
+            } */}
+            </nav>
+        </div>
     )
 }
 export default Navbar
