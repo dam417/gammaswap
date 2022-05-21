@@ -47,6 +47,10 @@ contract DepositPool is IDepositPool, IERC20 {
 
     bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
+    address public owner;
+    address public feeTo = address(0);
+    uint256 public fee = 5 * (10**16); //5% of borrowed interest gains by default (dev fee)
+
     uint private unlocked = 1;
 
     modifier lock() {
@@ -61,8 +65,13 @@ contract DepositPool is IDepositPool, IERC20 {
         uniPair = _uniPair;
         (token0, token1) = GammaswapLibrary.sortTokens(_token0, _token1);
         positionManager = _positionManager;
+        owner = msg.sender;
     }
 
+    function setFeeTo(address _feeTo) external {
+        require(msg.sender == owner, "DepositPool: SET_FEE_TO_FORBIDDEN");
+        feeTo = _feeTo;
+    }
 
     function balanceOf(address account) external override view returns (uint256 bal) {
         bal = _balanceOf[account];
@@ -171,6 +180,23 @@ contract DepositPool is IDepositPool, IERC20 {
         }
     }
 
+    function mintDevFee(uint256 nextBorrowedInvariant, uint256 _lastFeeIndex) private {
+        //address feeTo = owner;//IVegaswapV1Factory(factory).feeTo();
+        if(feeTo != address(0)) {
+            //uint256 devFee = IVegaswapV1Factory(factory).fee();
+            //(uint256 reserve0, uint256 reserve1) = getCPMReserves(uniPair);
+            (uint256 reserve0, uint256 reserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
+            uint256 rootK = GammaswapLibrary.convertAmountsToLiquidity(reserve0, reserve1);
+            uint256 uniLPBalance = IERC20(uniPair).balanceOf(address(this));
+            uint256 uniTotalSupply = IERC20(uniPair).totalSupply();
+            uint256 uniShareRootK = (uniLPBalance * rootK) / uniTotalSupply;
+            uint256 factor = ((_lastFeeIndex - ONE) * fee) / _lastFeeIndex;
+            uint256 accGrowth = (factor * nextBorrowedInvariant) / (nextBorrowedInvariant + uniShareRootK);
+            uint256 newDevShares = (totalSupply * accGrowth) / (ONE - accGrowth);
+            _mint(feeTo, newDevShares);
+        }/**/
+    }
+
     //TODO: What happens if the pool becomes empty? lastFeeIndex becomes 1 but accFeeIndex shouldn't become 1. Will the uniInvariants and/or uniSupply become 0?
     function getLastFeeIndex() external override view returns(uint _accFeeIndex, uint _lastUniInvariant, uint _lastUniTotalSupply, uint _lastFeeIndex) {
         (uint256 reserve0, uint256 reserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
@@ -203,6 +229,11 @@ contract DepositPool is IDepositPool, IERC20 {
         }
         accFeeIndex = _accFeeIndex;
         LAST_BLOCK_NUMBER = block.number;
+    }
+
+    function getBorrowedReserves() external view returns(uint256 _reserve0, uint256 _reserve1) {
+        (uint256 _uniReserve0, uint256 _uniReserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
+        (_reserve0, _reserve1) = GammaswapLibrary.getBorrowedReserves(uniPair, _uniReserve0, _uniReserve1, totalUniLiquidity, BORROWED_INVARIANT);
     }
 
     //This is depositing coins into the pool
@@ -340,7 +371,7 @@ contract DepositPool is IDepositPool, IERC20 {
         _safeTransferFn(token0, msg.sender, tokensOwed0);
         _safeTransferFn(token1, msg.sender, tokensOwed1);
 
-        //emit OpenPosition(tokensOwed0, tokensOwed1);/**/
+        emit OpenPosition(tokensOwed0, tokensOwed1);/**/
     }
 
     function _safeTransferFn(address token, address to, uint value) internal {//changed from private
@@ -412,6 +443,23 @@ contract DepositPool is IDepositPool, IERC20 {
         }
         _transfer(from, to, value);
         return true;
+    }
+
+    function getUniswapPath(address _token0, address _token1, address _uniRouter, address _to, uint256 amount) private returns(address[] memory path) {
+        path = new address[](2);
+        path[0] = _token0;
+        path[1] = _token1;
+
+        if(amount > IERC20(path[0]).allowance(_to, _uniRouter)) {
+            IERC20(path[0]).approve(_uniRouter, type(uint).max);
+        }
+    }
+
+    //Uniswap.
+    function swapExactTokensForTokens(address _token0, address _token1, uint256 amountOutMin, uint256 amount, address _to) internal {
+        //address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
+        address[] memory path = getUniswapPath(_token0, _token1, uniRouter, _to, amount);
+        IUniswapV2Router02(uniRouter).swapExactTokensForTokens(amount, amountOutMin, path, _to, type(uint).max);
     }
     /*function DepositPool(){
 

@@ -26,9 +26,9 @@ contract TestDepositPool is DepositPool {
     }
 
     function swapExactTokens4Tokens(address _token0, address _token1, uint256 amount, uint256 amountOutMin, address recipient) public {
-        /*address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
-        if(amount > IERC20(_token0).allowance(address(this), _uniRouter)) {
-            IERC20(_token0).approve(_uniRouter, uint(-1));
+        //address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
+        if(amount > IERC20(_token0).allowance(address(this), uniRouter)) {
+            IERC20(_token0).approve(uniRouter, type(uint).max);
         }
         swapExactTokensForTokens(_token0, _token1, amountOutMin, amount, recipient);/**/
     }

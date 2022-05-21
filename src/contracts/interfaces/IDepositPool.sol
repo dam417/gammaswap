@@ -2,6 +2,9 @@
 pragma solidity ^0.8.0;
 
 interface IDepositPool {
+
+    event OpenPosition(uint tokensOwed0, uint tokensOwed1);
+
     function getUniPair() external view returns(address);
     function getLastFeeIndex() external view returns(uint _accFeeIndex, uint _lastUniInvariant, uint _lastUniTotalSupply, uint _lastFeeIndex);
     function getAndUpdateLastFeeIndex() external returns(uint256 _accFeeIndex);
