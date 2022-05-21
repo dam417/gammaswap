@@ -40,11 +40,7 @@ function TabGroup(props) {
                     <Lend depPool={props.depPool} token0={props.token0} token1={props.token1} />
                 </TabPanel>
                 <TabPanel>
-<<<<<<< Updated upstream
                     <Borrow posManager={props.posManager} token0={props.token0} token1={props.token1}/>
-=======
-                    <Borrow depPool={props.depPool} posManager={props.posManager}/>
->>>>>>> Stashed changes
                 </TabPanel>
             </TabPanels>
         </Tabs>
