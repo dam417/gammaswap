@@ -27,14 +27,9 @@ function Lend(props) {
      }/**/
 
     return (
-
         /*Lend LP Form */
         <div>
-          <Heading> Lend </Heading>  
-
-
-
-<>
+          <Heading> Lend </Heading>
             <FormControl boxShadow='lg'>
                 <Heading size='md'>Balance</Heading>
                 <FormLabel htmlFor='token-0'>Token 0</FormLabel>
@@ -50,13 +45,6 @@ function Lend(props) {
                     <Input id='withdraw' type='text' />
                 <Button my={5} colorScheme='blue'>Submit</Button>
             </FormControl>
-</>
-
-
-
-
-
-            
         </div>
     )
 
