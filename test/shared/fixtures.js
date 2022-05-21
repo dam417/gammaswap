@@ -121,3 +121,41 @@ export async function poolFixture(provider, address) {
 
     return { factory, token0, token1, token2, pool, uniPair, posManager, uniRouter };
 }/**/
+
+//export async function pairFixture(provider: Web3Provider, [wallet]: Wallet[]): Promise<PairFixture> {
+export async function testPoolFixture(provider, address) {
+    //const { factory } = await factoryFixture(address);
+
+    const weth = await TestERC20.new('WETH', 'WETH', expandTo18Decimals(10000));
+    const uniFactory = await UniswapV2Factory.new(address, { from: address });
+    const uniRouter = await UniswapV2Router02.new(uniFactory.address, weth.address, { from: address });
+
+    const tokenA = await TestERC20.new('COINA', 'COINA', expandTo18Decimals(10000));
+    const tokenB = await TestERC20.new('COINB', 'COINB', expandTo18Decimals(10000));
+    const token2 = await TestERC20.new('COINC', 'COINC', expandTo18Decimals(10000));
+
+    await uniFactory.createPair(tokenA.address, tokenB.address, { from: address });
+    const uniPairAddress = await uniFactory.getPair(tokenA.address, tokenB.address);
+
+    const posManager = await TestPositionManager.new({ from: address });
+    //address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager
+    const pool = await TestDepositPool.new(uniRouter.address, uniPairAddress, tokenA.address, tokenB.address, address, { from: address });
+    //const pool = new Contract(poolAddress, JSON.stringify(VegaswapV1Pool.abi), provider).connect(provider.getSigner(address));
+    //const pool = new Contract(poolAddress, JSON.stringify(TestDepositPool.abi), provider).connect(provider.getSigner(address));
+
+    //const uniPairAddress = await pool.uniPair();
+    const uniPair = new Contract(uniPairAddress, JSON.stringify(UniswapV2Pair.abi), provider).connect(provider.getSigner(address));
+
+    //const posManagerAddress = await factory.positionManager();
+    //const posManager = new Contract(posManagerAddress, JSON.stringify(TestVegaswapV1Position.abi), provider).connect(provider.getSigner(address));
+
+    const token0Address = (await pool.token0());
+    const token0 = tokenA.address === token0Address ? tokenA : tokenB;
+    const token1 = tokenA.address === token0Address ? tokenB : tokenA;
+
+
+    //const uniRouterAddress = await factory.uniRouter();
+    //const uniRouter = new Contract(uniRouterAddress, JSON.stringify(UniswapV2Router02.abi), provider).connect(provider.getSigner(address));
+    //return { factory, token0, token1, token2, pool, uniPair, posManager, uniRouter };
+    return { token0, token1, token2, pool, uniPair, posManager, uniRouter };
+}
