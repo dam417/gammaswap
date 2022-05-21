@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+//import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
@@ -10,7 +10,15 @@ import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
 import './libraries/GammaswapLibrary.sol';
 import "./interfaces/IDepositPool.sol";
 
-contract DepositPool is IDepositPool, ERC20 {
+contract DepositPool is IDepositPool, IERC20 {
+
+    string public name = 'Gammaswap V0';
+    string public symbol = 'GAMA-V0';
+    uint8 public decimals = 18;
+    uint  public totalSupply;
+    mapping(address => uint) private _balanceOf;
+    mapping(address => mapping(address => uint)) private _allowance;
+
 
     uint public constant ONE = 10**18;
     uint public constant MINIMUM_LIQUIDITY = 10**3;
@@ -48,11 +56,20 @@ contract DepositPool is IDepositPool, ERC20 {
         unlocked = 1;
     }
 
-    constructor(address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager) ERC20("Gammaswap V0", "GAMA-V0") {
+    constructor(address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager) {
         uniRouter = _uniRouter;
         uniPair = _uniPair;
         (token0, token1) = GammaswapLibrary.sortTokens(_token0, _token1);
         positionManager = _positionManager;
+    }
+
+
+    function balanceOf(address account) external override view returns (uint256 bal) {
+        bal = _balanceOf[account];
+    }
+
+    function allowance(address owner, address spender) external override view returns (uint256 bal) {
+        bal = _allowance[owner][spender];
     }
 
     function getUniPair() external virtual override view returns(address _uniPair) {
@@ -113,7 +130,7 @@ contract DepositPool is IDepositPool, ERC20 {
         uint amountBMin,
         address to
     ) public virtual returns (uint amountA, uint amountB) {
-        transferFrom(msg.sender, address(this), liquidity); // send liquidity to pair
+        this.transferFrom(msg.sender, address(this), liquidity); // send liquidity to pair
         (uint amount0, uint amount1) = burn(to);
         require(amountA >= amountAMin, 'DepositPool: INSUFFICIENT_A_AMOUNT');
         require(amountB >= amountBMin, 'DepositPool: INSUFFICIENT_B_AMOUNT');
@@ -194,6 +211,7 @@ contract DepositPool is IDepositPool, ERC20 {
      */
     // this low-level function should be called from a contract which performs important safety checks
     function mint(address to) internal lock returns (uint256 liquidity) {
+    //function mint(address to) external lock returns (uint256 liquidity) {
         (uint amount0, uint amount1) = GammaswapLibrary.getTokenBalances(token0, token1, address(this));
 
         this.getAndUpdateLastFeeIndex();
@@ -202,7 +220,7 @@ contract DepositPool is IDepositPool, ERC20 {
         uint256 _reserve1;
         (uint256 _uniReserve0, uint256 _uniReserve1) = GammaswapLibrary.getUniReserves(uniPair, token0, token1);
 
-        uint256 _totalSupply = totalSupply();
+        uint256 _totalSupply = totalSupply;
         if(_totalSupply > 0) {
             //get reserves from uni
             (_reserve0, _reserve1) = GammaswapLibrary.getBorrowedReserves(uniPair, _uniReserve0, _uniReserve1, totalUniLiquidity, BORROWED_INVARIANT);//This is right because the liquidity has to
@@ -250,7 +268,7 @@ contract DepositPool is IDepositPool, ERC20 {
 
         (uint256 _reserve0, uint256 _reserve1) = GammaswapLibrary.getBorrowedReserves(uniPair, balance0, balance1, totalUniLiquidity, BORROWED_INVARIANT);
 
-        uint _totalSupply = totalSupply(); // gas savings, must be defined here since totalSupply can update in _mintFee
+        uint _totalSupply = totalSupply; // gas savings, must be defined here since totalSupply can update in _mintFee
         require(_totalSupply > 0, 'DepositPool: INSUFFICIENT_UNI_LIQUIDITY_AVAILABLE');
 
         amount0 = (liquidity * _reserve0) / _totalSupply; // using balances ensures pro-rata distribution
@@ -270,7 +288,7 @@ contract DepositPool is IDepositPool, ERC20 {
 
         this.getAndUpdateLastFeeIndex();
 
-        uint256 liquidity = balanceOf(address(this));
+        uint256 liquidity = _balanceOf[address(this)];
         (uint amount0, uint amount1) = calculateLiquidityAmounts(liquidity);
         require(amount0 > 0 && amount1 > 0, 'DepositPool: INSUFFICIENT_LIQUIDITY_BURNED');
 
@@ -355,6 +373,46 @@ contract DepositPool is IDepositPool, ERC20 {
     //TODO: updateYield (based on utilization ratio)
 
 
+    function _mint(address to, uint value) internal {
+        totalSupply = totalSupply + value;
+        _balanceOf[to] = _balanceOf[to] + value;
+        emit Transfer(address(0), to, value);
+    }
+
+    function _burn(address from, uint value) internal {
+        _balanceOf[from] = _balanceOf[from] - value;
+        totalSupply = totalSupply - value;
+        emit Transfer(from, address(0), value);
+    }
+
+    function _approve(address owner, address spender, uint value) private {
+        _allowance[owner][spender] = value;
+        emit Approval(owner, spender, value);
+    }
+
+    function _transfer(address from, address to, uint value) private {
+        _balanceOf[from] = _balanceOf[from] - value;
+        _balanceOf[to] = _balanceOf[to] + value;
+        emit Transfer(from, to, value);
+    }
+
+    function approve(address spender, uint value) external override returns (bool) {
+        _approve(msg.sender, spender, value);
+        return true;
+    }
+
+    function transfer(address to, uint value) external override returns (bool) {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint value) external override returns (bool) {
+        if (_allowance[from][msg.sender] != type(uint).max) {
+            _allowance[from][msg.sender] = _allowance[from][msg.sender] - value;
+        }
+        _transfer(from, to, value);
+        return true;
+    }
     /*function DepositPool(){
 
     }/**/

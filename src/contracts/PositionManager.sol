@@ -226,15 +226,15 @@ contract PositionManager is IPositionManager, ERC721 {
         require(heldBalance >= owedBalance, 'PositionManager: IS_UNDERWATER');
         //require(liquidity <= position.liquidity, "VegaswapV1: EXCESSIVE_LIQUIDITY_BURNED");//In the UI we pass
 
-        uint256 liquidity = position.liquidity < liquidity ? position.liquidity : liquidity;
+        uint256 _liquidity = position.liquidity < liquidity ? position.liquidity : liquidity;
 
         //Transfer tokens held and all collateral available
         _safeTransferFn(position.token0, position.poolId, position.tokensHeld0);
         _safeTransferFn(position.token1, position.poolId, position.tokensHeld1);
 
-        (position.tokensHeld0, position.tokensHeld1) = IDepositPool(position.poolId).closePosition(liquidity);
+        (position.tokensHeld0, position.tokensHeld1) = IDepositPool(position.poolId).closePosition(_liquidity);
 
-        position.liquidity = position.liquidity - liquidity;
+        position.liquidity = position.liquidity - _liquidity;
 
         updateTokenBalances(position);
         //No need to check collateral because decreasing position always improves collateralization

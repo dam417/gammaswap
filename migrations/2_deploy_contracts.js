@@ -5,6 +5,8 @@ const { projectId } = require('../secrets.json');
 const TestERC20 = artifacts.require('./TestERC20');
 const DepositPool = artifacts.require('./DepositPool');
 const PositionManager = artifacts.require('./PositionManager');
+const TestDepositPool = artifacts.require('./TestDepositPool');
+const TestPositionManager = artifacts.require('./TestPositionManager');
 
 const json1 = require("@uniswap/v2-core/build/UniswapV2Factory.json");//.bytecode;
 const UniswapV2Factory = contract(json1);
@@ -171,5 +173,11 @@ module.exports = async function(_deployer, network, accounts) {
         console.log("deployer::depositPool.address="+depositPool.address);
 
         await positionManager.registerPool(tokenA.address, tokenB.address, depositPool.address, { from: accounts[0] });
+
+        await _deployer.deploy(TestDepositPool, uniRouter.address, uniPair, tokenA.address, tokenB.address, positionManager.address, { from: accounts[0] });
+        let testDepositPool = await TestDepositPool.deployed();
+
+        await _deployer.deploy(TestPositionManager, { from: accounts[0] });
+        let testPositionManager = await TestPositionManager.deployed();
     }
 };
