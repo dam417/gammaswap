@@ -1,81 +1,116 @@
-import React, { useState, useEffect  } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import styled from 'styled-components';
-const Button = styled.button`
-            background-color: black;
-            color: white;
-            font-size: 20px;
-            position: absolute;
-            padding: 10px 60px;
-            border-radius: 5px;
-            margin: 10px 0px;
-            margin-left: 500px;
-            cursor: pointer;
-            &:disabled {
-            color: grey;
-            opacity: 0.7;
-            cursor: default;
-        }
-            `;
-const homeLink = {
-    cursor: 'pointer'
-};
-
+import * as React from 'react'
+import {
+    Box,
+    Flex,
+    Button,
+    Stack,
+    Link as ChakraLink,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    useColorModeValue,
+    useDisclosure,
+} from '@chakra-ui/react';
+  
 function Navbar(props) {
-
-
-    let navigate = useNavigate();
-
-    let loc = useLocation();
-    console.log("location >> ");
-    console.log(loc);
-
-    useEffect(() => {
-        console.log("location >> ");
-        console.log(loc);
-    },[]);
-
-    const routeChange = (path) =>{
-        //console.log("routeChange >> " + id);
-        //let path = `/app/${id}`;
-        //let path = `/app`;
-        navigate(path);
-    }
+    const { isOpen, onToggle } = useDisclosure();
 
     return (
-        <div className="nav-bar">
-            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-                <h1 className="navbar-brand col-sm-3 col-md-2 mr-0">
-                    <Link to="/">
-                        GammaSwap V0
-                    </Link>
-                </h1>
-                <div>
-                    <Link to="/about">
-                        About
-                    </Link>
-                </div>
-                <div>
-                    <Link to="/app">
-                        Launch
-                    </Link>
-                </div>
-                <div className="wallet">
-                    {props.account}
-                </div>
-            {/* {loc.pathname == '/'
-            ?
-            <Button
-                onClick={() => {
-                    routeChange('/app')
-                }}
-            >
-                Launch
-            </Button> 
-            : <div></div>
-            } */}
-            </nav>
-        </div>
-    )
+        <Box>
+            <Flex
+                bg={useColorModeValue('', 'gray.800')}
+                color={useColorModeValue('gray.600', 'white')}
+                minH={'60px'}
+                py={{ base: 2 }}
+                px={{ base: 4 }}
+                align={'center'}>
+                <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+                    <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                        <DesktopNav />
+                    </Flex>
+                </Flex>
+                <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={'flex-end'}
+                    direction={'row'}
+                    spacing={6}>
+                    <Button
+                        display={{ base: 'none', md: 'inline-flex' }}
+                        fontSize={'lg'}
+                        fontWeight={600}
+                        color={'white'}
+                        bg={'pink.400'}
+                        href={'#'}
+                        _hover={{
+                        bg: 'pink.300',
+                        }}>
+                        {props.account !== props.account ? "Connect Wallet" : props.account}
+                    </Button>
+                </Stack>
+            </Flex>
+        </Box>
+    );
 }
+
+const DesktopNav = () => {
+    const linkColor = useColorModeValue('gray.600', 'gray.200');
+    const linkHoverColor = useColorModeValue('gray.800', 'white');
+    const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+
+    return (
+        <Stack direction={'row'} spacing={4}>
+        {NAV_ITEMS.map((navItem) => (
+            <Box key={navItem.label}>
+            <Popover trigger={'hover'} placement={'bottom-start'}>
+                <PopoverTrigger>
+                <ChakraLink
+                    p={2}
+                    href={navItem.href ?? '#'}
+                    fontSize={'lg'}
+                    fontWeight={500}
+                    color={linkColor}
+                    _hover={{
+                    textDecoration: 'none',
+                    color: linkHoverColor,
+                    }}>
+                    {navItem.label}
+                </ChakraLink>
+                </PopoverTrigger>
+                {navItem.children && (
+                <PopoverContent
+                    border={0}
+                    boxShadow={'xl'}
+                    bg={popoverContentBgColor}
+                    p={4}
+                    rounded={'xl'}
+                    minW={'sm'}>
+                    <Stack>
+                    {navItem.children.map((child) => (
+                        <DesktopSubNav key={child.label} {...child} />
+                    ))}
+                    </Stack>
+                </PopoverContent>
+                )}
+            </Popover>
+            </Box>
+        ))}
+        </Stack>
+    );
+};
+
+const NAV_ITEMS = [
+    {
+        label: 'Home',
+        href: '/',
+    },
+    {
+        label: 'About',
+        href: '/about',
+    },
+    {
+        label: 'Launch',
+        href: '/app',
+    },
+];
+
 export default Navbar
