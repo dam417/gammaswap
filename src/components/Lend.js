@@ -13,7 +13,7 @@ import {
     FormHelperText,
 } from '@chakra-ui/react'
 
-function Lend(props) {
+function Lend({ token0, token1}) {
     // Declare a new state variable, which we'll call "count"
     /*const [tokenA, setTokenA] = useState(0);
      const [tokenB, setTokenB] = useState(0);
@@ -50,12 +50,12 @@ function Lend(props) {
           <Heading> Lend </Heading>
             <FormControl boxShadow='lg'>
                 <Heading size='md'>Balance</Heading>
-                <FormLabel htmlFor='token-0'>{props.token0.symbol}</FormLabel>
+                <FormLabel htmlFor='token-0'>{token0.symbol}</FormLabel>
                 <Input placeholder='amount' id='token-0' type='text'
                        ref={(input) => {
                            setToken0Amt(input)
                        }} />
-                <FormLabel mt={5} htmlFor='token-1'>{props.token1.symbol}</FormLabel>
+                <FormLabel mt={5} htmlFor='token-1'>{token1.symbol}</FormLabel>
                 <Input placeholder='amount' id='token-1' type='text'
                        ref={(input) => {
                            setToken1Amt(input)
