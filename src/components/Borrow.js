@@ -40,19 +40,20 @@ function Borrow({ token0, token1, posManager }) {
     }
 
     async function openPositionHandler({ token0Amt, token1Amt, liquidity }) {
-        const createPosition = await posManager.methods.openPosition(
-            token0.address,
-            token1.address,
-            token0Amt,
-            token1Amt,
-            liquidity,
-            toAddr,  
-        ).call();
+        // TODO
+
+        // const createPosition = await posManager.methods.openPosition(
+        //     token0.address,
+        //     token1.address,
+        //     token0Amt,
+        //     token1Amt,
+        //     liquidity,
+        //     toAddr,  
+        // ).call();
     }
 
     async function repayHandler({ repayLiquidity }) {
         // TODO
-        console.log(repayLiquidity)
     }
 
     return (

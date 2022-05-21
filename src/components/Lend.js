@@ -1,7 +1,5 @@
-/**
- * Created by danielalcarraz on 5/20/22.
- */
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import {
     FormControl,
@@ -29,51 +27,76 @@ function Lend({ token0, token1}) {
     const [token0Amt, setToken0Amt] = useState(0);
     const [token1Amt, setToken1Amt] = useState(0);
     const [liquidityAmt, setLiquidityAmt] = useState(0);
+    const { register, handleSubmit } = useForm();
+    const { register: register2, handleSubmit: handleSubmit2 } = useForm();
 
-    function deposit() {
-        console.log("deposit() >> ");
-        console.log("token0Amt >>");
-        console.log(token0Amt.value);
-        console.log("token1Amt >>");
-        console.log(token1Amt.value);
+    async function deposit({ token0, token1 }) {
+        // TODO
     }
 
-    function withdraw() {
-        console.log("withdraw() >> ");
-        console.log("liquidityAmt >>");
-        console.log(liquidityAmt.value);
+    async function withdraw({ balance }) {
+        // TODO
     }
 
     return (
         /*Lend LP Form */
-        <div>
-          <Heading> Lend </Heading>
+        <>
+            <form onSubmit={handleSubmit(deposit)}>
+            <Heading>Lend</Heading>
             <FormControl boxShadow='lg'>
                 <Heading size='md'>Balance</Heading>
-                <FormLabel htmlFor='token-0'>{token0.symbol}</FormLabel>
-                <Input placeholder='amount' id='token-0' type='text'
-                       ref={(input) => {
-                           setToken0Amt(input)
-                       }} />
-                <FormLabel mt={5} htmlFor='token-1'>{token1.symbol}</FormLabel>
-                <Input placeholder='amount' id='token-1' type='text'
-                       ref={(input) => {
-                           setToken1Amt(input)
-                       }}  />
-                <Button my={5} colorScheme='blue' onClick={deposit}>Submit</Button>
+                <FormLabel htmlFor='token0'>{token0.symbol}</FormLabel>
+                <Input
+                    placeholder='amount'
+                    id='token0'
+                    type='text'
+                    {...register('token0')}
+                />
+                <FormLabel
+                    mt={5}
+                    htmlFor='token1'
+                >
+                    {token1.symbol}
+                </FormLabel>
+                <Input
+                    placeholder='amount'
+                    id='token1'
+                    type='text'
+                    {...register('token1')}
+                />
+                <Button
+                    my={5}
+                    colorScheme='blue'
+                    type='submit'
+                >
+                    Submit
+                </Button>
             </FormControl>
-
-            <FormControl boxShadow='lg' mt={10}>
-                <Heading size='md'>Withdraw</Heading>
-                <FormLabel mt={5} htmlFor='withdraw'></FormLabel>
-                    <Input id='withdraw' type='text'
-                           ref={(input) => {
-                               setLiquidityAmt(input)
-                           }} />
-                <Button my={5} colorScheme='blue' onClick={withdraw}>Submit</Button>
-            </FormControl>
-        </div>
+            </form>
+            <form onSubmit={handleSubmit2(withdraw)}>
+                <FormControl boxShadow='lg' mt={10}>
+                    <Heading size='md'>Withdraw</Heading>
+                    <FormLabel
+                    mt={5}
+                    htmlFor='balance'
+                    >
+                        Balance
+                    </FormLabel>
+                        <Input
+                            id='balance'
+                            type='text'
+                            {...register2('balance')}
+                        />
+                    <Button
+                        my={5}
+                        colorScheme='blue'
+                        type='submit'
+                    >
+                        Submit
+                    </Button>
+                </FormControl>
+            </form>
+        </>
     )
-
 }
 export default Lend;
