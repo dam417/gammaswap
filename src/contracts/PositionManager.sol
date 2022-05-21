@@ -24,6 +24,9 @@ contract PositionManager is IPositionManager, ERC721 {
     uint80 private _nextPoolId = 1;
 
     mapping(address => mapping(address => address)) public getPool;
+    mapping(address => uint256[]) public positionsByOwner;
+    mapping(address => uint256) public positionCountByOwner;
+
     address[] public  allPools;
     address owner;
 
@@ -78,6 +81,11 @@ contract PositionManager is IPositionManager, ERC721 {
         tokenId = mint(token0, token1, liquidity, to);
     }
 
+    function addPositionToOwnerList(address to, uint256 tokenId) internal {
+        positionsByOwner[to].push(tokenId);
+        positionCountByOwner[to] = positionsByOwner[to].length;
+    }
+
     /*
      * TODO: Instead of portfolio value use invariant to measure liquidity. This will enable to also increase the position size based on liquidity
      * Also the liquidity desired should probably be measured in terms of an invariant.
@@ -129,6 +137,8 @@ contract PositionManager is IPositionManager, ERC721 {
         GammaswapPosLibrary.checkCollateral(position, 750);
 
         updateTokenBalances(position);
+
+        addPositionToOwnerList(to, tokenId);
 
         /**/
 
