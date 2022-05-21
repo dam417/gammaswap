@@ -1,52 +1,96 @@
-/**
- * Created by danielalcarraz on 5/20/22.
- */
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import {
     FormControl,
     FormLabel,
     Input,
     Button,
     Heading,
-    FormErrorMessage,
-    FormHelperText,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { constants } from 'ethers';
 
-function Lend(props) {
-    // Declare a new state variable, which we'll call "count"
-    /*const [tokenA, setTokenA] = useState(0);
-     const [tokenB, setTokenB] = useState(0);
+function Lend({ account, depPool, token0, token1}) {
+    const [token0Amt, setToken0Amt] = useState(0);
+    const [token1Amt, setToken1Amt] = useState(0);
+    const [liquidityAmt, setLiquidityAmt] = useState(0);
+    const { register, handleSubmit } = useForm();
+    const { register: register2, handleSubmit: handleSubmit2 } = useForm();
 
-     let navigate = useNavigate();
+    async function deposit({ token0, token1 }) {
+        // TODO
+    }
 
-     const routeChange = (id) =>{
-     console.log("routeChange >> " + id);
-     let path = `/pool/${id}`;
-     navigate(path);
-     }/**/
+    async function withdraw({ balance }) {
+        // TODO
+    }
+
+    async function approve(_token) {
+        console.log("approve() >> " + _token.symbol);
+        const res = await _token.contract.methods.approve(depPool._address, constants.MaxUint256).send({ from: account});
+        console.log("res >>");
+        console.log(res);
+    }
+
 
     return (
         /*Lend LP Form */
-        <div>
-          <Heading> Lend </Heading>
-            <FormControl boxShadow='lg'>
-                <Heading size='md'>Balance</Heading>
-                <FormLabel htmlFor='token-0'>Token 0</FormLabel>
-                <Input placeholder='amount' id='token-0' type='text' />
-                <FormLabel mt={5} htmlFor='token-1'>Token 1</FormLabel>
-                <Input placeholder='amount' id='token-1' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
-            </FormControl>
-
-            <FormControl boxShadow='lg' mt={10}>
-                <Heading size='md'>Withdraw</Heading>
-                <FormLabel mt={5} htmlFor='withdraw'></FormLabel>
-                    <Input id='withdraw' type='text' />
-                <Button my={5} colorScheme='blue'>Submit</Button>
-            </FormControl>
-        </div>
+        <>
+            <form onSubmit={handleSubmit(deposit)}>
+                <Heading>Lend</Heading>
+                <FormControl boxShadow='lg'>
+                    <Heading size='md'>Balance</Heading>
+                    <FormLabel htmlFor='token0'>{token0.symbol}</FormLabel>
+                    <Input
+                        placeholder='amount'
+                        id='token0'
+                        type='text'
+                        {...register('token0')}
+                    />
+                    <FormLabel
+                        mt={5}
+                        htmlFor='token1'
+                    >
+                        {token1.symbol}
+                    </FormLabel>
+                    <Input
+                        placeholder='amount'
+                        id='token1'
+                        type='text'
+                        {...register('token1')}
+                    />
+                    <Button
+                        my={5}
+                        colorScheme='blue'
+                        type='submit'
+                    >
+                        Submit
+                    </Button>
+                </FormControl>
+            </form>
+            <form onSubmit={handleSubmit2(withdraw)}>
+                <FormControl boxShadow='lg' mt={10}>
+                    <Heading size='md'>Withdraw</Heading>
+                    <FormLabel
+                    mt={5}
+                    htmlFor='balance'
+                    >
+                        Balance
+                    </FormLabel>
+                        <Input
+                            id='balance'
+                            type='text'
+                            {...register2('balance')}
+                        />
+                    <Button
+                        my={5}
+                        colorScheme='blue'
+                        type='submit'
+                    >
+                        Submit
+                    </Button>
+                </FormControl>
+            </form>
+        </>
     )
-
 }
 export default Lend;
