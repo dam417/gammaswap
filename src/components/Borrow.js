@@ -26,6 +26,7 @@ function Borrow({ token0, token1, posManager }) {
     // }
     const [toAddr, setToAddr] = useState("...");
     const { register, handleSubmit } = useForm();
+    const { register: register2, handleSubmit: handleSubmit2 } = useForm();
 
     useEffect(() => {
         loadAddresses()
@@ -38,7 +39,7 @@ function Borrow({ token0, token1, posManager }) {
         }
     }
 
-    async function openPositionHandler({ token0Amt, token1Amt, liquidity}) {
+    async function openPositionHandler({ token0Amt, token1Amt, liquidity }) {
         const createPosition = await posManager.methods.openPosition(
             token0.address,
             token1.address,
@@ -49,11 +50,16 @@ function Borrow({ token0, token1, posManager }) {
         ).call();
     }
 
+    async function repayHandler({ repayLiquidity }) {
+        // TODO
+        console.log(repayLiquidity)
+    }
+
     return (
         <>
             <form onSubmit={handleSubmit(openPositionHandler)}>
                 <FormControl boxShadow='lg'>
-                    <Heading size='md'>Open</Heading>
+                    <Heading>Open</Heading>
                     <FormLabel htmlFor='token0'>{token0.symbol}</FormLabel>
                     <Input
                         placeholder='amount'
@@ -77,17 +83,20 @@ function Borrow({ token0, token1, posManager }) {
                     />
                     <Button my={5} colorScheme='blue' type='submit'>Submit</Button>
                 </FormControl>
+            </form>
+            <form onSubmit={handleSubmit2(repayHandler)}>
                 <FormControl boxShadow='lg' mt={10}>
                     <Heading size='md'>Repay</Heading>
                     <FormLabel
                         mt={5}
-                        htmlFor='liquidity'
+                        htmlFor='repayLiquidity'
                     >
                         Liquidity
                     </FormLabel>
                         <Input
-                            id='liquidity'
+                            id='repayLiquidity'
                             type='number' 
+                            {...register2('repayLiquidity')}
                         />
                     <Button
                         my={5}
