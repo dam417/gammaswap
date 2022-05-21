@@ -58,8 +58,9 @@ function App() {
               const symbol0 = await _token0.methods.symbol().call();
               const symbol1 = await _token1.methods.symbol().call();
               console.log("token1Addr >> " + token1Addr);
-              setToken0({address: token0Addr, symbol: symbol0});
-              setToken1({address: token1Addr, symbol: symbol1});
+
+              setToken0({address: token0Addr, symbol: symbol0, contract: _token0});
+              setToken1({address: token1Addr, symbol: symbol1, contract: _token1});
 
           } else {
               const posMgrNetworkData = PosManager.networks[networkId];
@@ -83,8 +84,8 @@ function App() {
                   const symbol0 = await _token0.methods.symbol().call();
                   const symbol1 = await _token1.methods.symbol().call();
                   console.log("token1Addr >> " + token1Addr);
-                  setToken0({address: token0Addr, symbol: symbol0});
-                  setToken1({address: token1Addr, symbol: symbol1});
+                  setToken0({address: token0Addr, symbol: symbol0, contract: _token0});
+                  setToken1({address: token1Addr, symbol: symbol1, contract: _token1});
               }
           }
 

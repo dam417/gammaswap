@@ -11,9 +11,10 @@ import {
     Heading,
     FormErrorMessage,
     FormHelperText,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
+import { constants } from 'ethers';
 
-function Lend({ token0, token1}) {
+function Lend({ account, depPool, token0, token1}) {
     // Declare a new state variable, which we'll call "count"
     /*const [tokenA, setTokenA] = useState(0);
      const [tokenB, setTokenB] = useState(0);
@@ -30,19 +31,30 @@ function Lend({ token0, token1}) {
     const [token1Amt, setToken1Amt] = useState(0);
     const [liquidityAmt, setLiquidityAmt] = useState(0);
 
-    function deposit() {
+    async function deposit() {
         console.log("deposit() >> ");
         console.log("token0Amt >>");
         console.log(token0Amt.value);
         console.log("token1Amt >>");
         console.log(token1Amt.value);
+        const res = await depPool.methods.addLiquidity(token0Amt.value, token1Amt.value, 0, 0, props.account).send({ from: account });
+        console.log("res >>");
+        console.log(res);
     }
 
-    function withdraw() {
+    async function withdraw() {
         console.log("withdraw() >> ");
         console.log("liquidityAmt >>");
         console.log(liquidityAmt.value);
     }
+
+    async function approve(_token) {
+        console.log("approve() >> " + _token.symbol);
+        const res = await _token.contract.methods.approve(depPool._address, constants.MaxUint256).send({ from: account});
+        console.log("res >>");
+        console.log(res);
+    }
+
 
     return (
         /*Lend LP Form */
@@ -60,6 +72,8 @@ function Lend({ token0, token1}) {
                        ref={(input) => {
                            setToken1Amt(input)
                        }}  />
+                <Button my={5} colorScheme='blue' onClick={() => approve(token0)}>Approve {token0.symbol}</Button>&nbsp;
+                <Button my={5} colorScheme='blue' onClick={() => approve(token1)}>Approve {token1.symbol}</Button>&nbsp;
                 <Button my={5} colorScheme='blue' onClick={deposit}>Submit</Button>
             </FormControl>
 
