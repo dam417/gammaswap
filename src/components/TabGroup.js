@@ -35,12 +35,14 @@ function TabGroup(props) {
                 <Tab>Lend</Tab>
                 <Tab>Borrow</Tab>
             </TabList>
-            <TabPanel>
-                <Lend depPool={props.depPool} account={props.account} token0={props.token0} token1={props.token1} />
-            </TabPanel>
-            <TabPanel>
-                <Borrow posManager={props.posManager} account={props.account} token0={props.token0} token1={props.token1}/>
-            </TabPanel>
+            <TabPanels>
+                <TabPanel>
+                    <Lend depPool={props.depPool} account={props.account} token0={props.token0} token1={props.token1} />
+                </TabPanel>
+                <TabPanel>
+                    <Borrow posManager={props.posManager} account={props.account} token0={props.token0} token1={props.token1}/>
+                </TabPanel>
+            </TabPanels>
         </Tabs>
         // <>
         // <ButtonGroup>

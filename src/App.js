@@ -13,6 +13,7 @@ import truncateEthAddress from 'truncate-eth-address'
 
 function App() {
   const [account, setAccount] = useState("...");
+  const [accountAddr, setAccountAddr] = useState("");
   const [posManager, setPosManager] = useState({});
   const [depPool, setDepPool] = useState({});
   const [token0, setToken0] = useState({});
@@ -34,6 +35,7 @@ function App() {
       if (window.web3) {
           var accounts = await web3.eth.getAccounts();
           setAccount(truncateEthAddress(accounts[0]));
+          setAccountAddr(accounts[0]);
           const networkId = await web3.eth.net.getId();
 
           console.log("networkId >> " + networkId);
@@ -103,7 +105,7 @@ function App() {
               <Route exact path={"/"}
                      element={<Home/>}/>
               <Route exact path={"/app"}
-                     element={<TabGroup token0={token0} token1={token1}
+                     element={<TabGroup account={accountAddr} token0={token0} token1={token1}
                          posManager={posManager} depPool={depPool}/>}/>
             </Routes>
           </header>
