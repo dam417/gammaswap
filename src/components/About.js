@@ -24,15 +24,8 @@ function About() {
                     color="#94a3b8"
                     fontSize="2xl"
                 >
-                Apparently we had reached a great height in the atmosphere, for the
-                sky was a dead black, and the stars had ceased to twinkle. By the same
-                illusion which lifts the horizon of the sea to the level of the
-                spectator on a hillside, the sable cloud beneath was dished out, and
-                the car seemed to float in the middle of an immense dark sphere, whose
-                upper half was strewn with silver. Looking down into the dark gulf
-                below, I could see a ruddy light streaming through a rift in the
-                clouds.
-                </Text>
+                The value in GammaSwap is to allow traders to buy volatility from Uniswap. This would be achieved by using the GammaSwap pool (GSP). In short, liquidity lenders will provide liquidity to Uniswap via GSP. It is a novel product to separate the embedded call and put options from an Uniswap liquidity pool so that liquidity providers and speculators can better hedge their risk exposures.
+               </Text>
             </Stack>
         </Container>
     )
