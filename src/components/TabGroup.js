@@ -6,10 +6,10 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel, Container } from '@chakra-ui/r
 function TabGroup(props) {
     return (
         <Container>
-            <Tabs variant='soft-rounded' colorScheme='green'>
+            <Tabs variant='soft-rounded' colorScheme={'purple'}>
                 <TabList>
-                    <Tab>Lend</Tab>
-                    <Tab>Borrow</Tab>
+                    <Tab textColor={'#e2e8f0'}>Lend</Tab>
+                    <Tab textColor={'#e2e8f0'}>Borrow</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>

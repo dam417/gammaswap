@@ -6,6 +6,7 @@ import {
     Input,
     Button,
     Heading,
+    Box
 } from '@chakra-ui/react';
 import { constants } from 'ethers';
 
@@ -35,61 +36,79 @@ function Lend({ account, depPool, token0, token1}) {
     return (
         /*Lend LP Form */
         <>
-            <form onSubmit={handleSubmit(deposit)}>
-                <Heading>Lend</Heading>
-                <FormControl boxShadow='lg'>
-                    <Heading size='md'>Balance</Heading>
-                    <FormLabel htmlFor='token0'>{token0.symbol}</FormLabel>
-                    <Input
-                        placeholder='amount'
-                        id='token0'
-                        type='text'
-                        {...register('token0')}
-                    />
-                    <FormLabel
-                        mt={5}
-                        htmlFor='token1'
-                    >
-                        {token1.symbol}
-                    </FormLabel>
-                    <Input
-                        placeholder='amount'
-                        id='token1'
-                        type='text'
-                        {...register('token1')}
-                    />
-                    <Button
-                        my={5}
-                        colorScheme='blue'
-                        type='submit'
-                    >
-                        Submit
-                    </Button>
-                </FormControl>
-            </form>
-            <form onSubmit={handleSubmit2(withdraw)}>
-                <FormControl boxShadow='lg' mt={10}>
-                    <Heading size='md'>Withdraw</Heading>
-                    <FormLabel
-                    mt={5}
-                    htmlFor='balance'
-                    >
-                        Balance
-                    </FormLabel>
+            <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg'>
+                <form onSubmit={handleSubmit(deposit)}>
+                    <FormControl p={14} boxShadow='lg'>
+                        <Heading color={'#e2e8f0'}>Lend</Heading>
+                        <Heading
+                        color={'#e2e8f0'}
+                        mt={3}
+                        size='md'>Balance</Heading>
+                        <FormLabel
+                            color={'#e2e8f0'}
+                            fontSize={'md'}
+                            fontWeight={'semibold'}
+                            htmlFor='token0'
+                        >
+                            {token0.symbol}
+                        </FormLabel>
                         <Input
-                            id='balance'
+                            placeholder='amount'
+                            id='token0'
                             type='text'
-                            {...register2('balance')}
+                            {...register('token0')}
                         />
-                    <Button
-                        my={5}
-                        colorScheme='blue'
-                        type='submit'
-                    >
-                        Submit
-                    </Button>
-                </FormControl>
-            </form>
+                        <FormLabel
+                            color={'#e2e8f0'}
+                            fontSize={'md'}
+                            fontWeight={'semibold'}
+                            mt={5}
+                            htmlFor='token1'
+                        >
+                            {token1.symbol}
+                        </FormLabel>
+                        <Input
+                            placeholder='amount'
+                            id='token1'
+                            type='text'
+                            {...register('token1')}
+                        />
+                        <Button
+                            my={5}
+                            colorScheme='blue'
+                            type='submit'
+                        >
+                            Submit
+                        </Button>
+                    </FormControl>
+                </form>
+                <form onSubmit={handleSubmit2(withdraw)}>
+                    <FormControl p={14}>
+                        <Heading color={'#e2e8f0'}>Withdraw</Heading>
+                        <FormLabel
+                            color={'#e2e8f0'}
+                            fontSize={'md'}
+                            fontWeight={'semibold'}                        
+                            mt={5}
+                            htmlFor='balance'
+                        >
+                            Balance
+                        </FormLabel>
+                            <Input
+                                id='balance'
+                                type='text'
+                                {...register2('balance')}
+                            />
+                        <Button
+                            my={5}
+                            colorScheme='blue'
+                            type='submit'
+                        >
+                            Submit
+                        </Button>
+                    </FormControl>
+                </form>
+            </Box>
         </>
     )
 }
