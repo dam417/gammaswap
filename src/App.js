@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 import Transak from './components/Transak';
+import CrossChain from './components/CrossChain';
 import TabGroup from './components/TabGroup';
 import React, { useState, useEffect } from 'react'
 import PosManager from './abis/PositionManager.json';
@@ -117,6 +118,7 @@ function App() {
             }
           />
           <Route path="/transak" element={<Transak />} />
+          <Route path="/crosschain" element={<CrossChain />} />
         </Routes>
       </div>
     </Router>

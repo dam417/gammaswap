@@ -113,6 +113,10 @@ const NAV_ITEMS = [
         label: 'Need crypto?',
         href: '/transak',
     },
+    {
+        label: 'Cross Chain',
+        href: '/crosschain',
+    },
 ];
 
 export default Navbar
