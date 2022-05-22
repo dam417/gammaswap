@@ -18,8 +18,6 @@ function Navbar(props) {
     return (
         <Box>
             <Flex
-                bg={useColorModeValue('', 'gray.800')}
-                color={useColorModeValue('gray.600', 'white')}
                 minH={'60px'}
                 py={{ base: 2 }}
                 px={{ base: 4 }}
@@ -37,12 +35,12 @@ function Navbar(props) {
                     <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'lg'}
-                        fontWeight={600}
-                        color={'white'}
-                        bg={'pink.400'}
+                        fontWeight={700}
+                        color={'#e2e8f0'}
+                        bg={'#2563eb'}
                         href={'#'}
                         _hover={{
-                        bg: 'pink.300',
+                        bg: '#3b82f6',
                         }}>
                         {props.account !== props.account ? "Connect Wallet" : props.account}
                     </Button>
@@ -53,8 +51,8 @@ function Navbar(props) {
 }
 
 const DesktopNav = () => {
-    const linkColor = useColorModeValue('gray.600', 'gray.200');
-    const linkHoverColor = useColorModeValue('gray.800', 'white');
+    const linkColor = useColorModeValue('#e2e8f0', 'gray.200');
+    const linkHoverColor = useColorModeValue('#f1f5f9', 'white');
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
     return (
@@ -67,7 +65,7 @@ const DesktopNav = () => {
                     p={2}
                     href={navItem.href ?? '#'}
                     fontSize={'lg'}
-                    fontWeight={500}
+                    fontWeight={700}
                     color={linkColor}
                     _hover={{
                     textDecoration: 'none',
