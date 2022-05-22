@@ -144,7 +144,7 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
                         <Heading
                             color={'#e2e8f0'}
                         >
-                            Open
+                            Open Loan
                         </Heading>
                         <FormLabel
                         color={'#e2e8f0'}
@@ -211,7 +211,7 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
                 <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Liquidity: {pos.liquidity ? pos.liquidity : 0} </Heading>
                 <form onSubmit={handleSubmit2(repayHandler)}>
                     <FormControl p={14} boxShadow='lg' mt={10}>
-                        <Heading color={'#e2e8f0'}>Repay</Heading>
+                        <Heading color={'#e2e8f0'}>Repay Loan</Heading>
                         <FormLabel
                             color={'#e2e8f0'}
                             fontSize={'md'}

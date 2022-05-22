@@ -13,7 +13,7 @@ function TabGroup(props) {
             <Statistics depPool={props.depPool} token0={props.token0} token1={props.token1}/>
             <Tabs variant='soft-rounded' colorScheme={'purple'}>
                 <TabList>
-                    <Tab textColor={'#e2e8f0'}>Lend</Tab>
+                    <Tab textColor={'#e2e8f0'}>Deposit</Tab>
                     <Tab textColor={'#e2e8f0'}>Borrow</Tab>
                 </TabList>
                 <TabPanels>
