@@ -40,7 +40,7 @@ function Navbar(props) {
                         bg={'#2563eb'}
                         href={'#'}
                         _hover={{
-                            bg: 'pink.300',
+                            bg: '#3b82f6',
                         }}>
                         {props.account !== props.account ? "Connect Wallet" : props.account}
                     </Button>
@@ -65,7 +65,7 @@ const DesktopNav = () => {
                                 p={2}
                                 href={navItem.href ?? '#'}
                                 fontSize={'lg'}
-                                fontWeight={500}
+                                fontWeight={700}
                                 color={linkColor}
                                 _hover={{
                                     textDecoration: 'none',
