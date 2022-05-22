@@ -114,8 +114,8 @@ const NAV_ITEMS = [
         href: '/transak',
     },
     {
-        label: 'Cross Chain',
-        href: '/crosschain',
+        label: 'Bridge',
+        href: '/bridge',
     },
 ];
 

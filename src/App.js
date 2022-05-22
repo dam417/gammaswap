@@ -118,7 +118,7 @@ function App() {
             }
           />
           <Route path="/transak" element={<Transak />} />
-          <Route path="/crosschain" element={<CrossChain />} />
+          <Route path="/bridge" element={<CrossChain />} />
         </Routes>
       </div>
     </Router>
