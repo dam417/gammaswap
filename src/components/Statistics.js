@@ -44,20 +44,7 @@ function Statistics(props) {
             // You can await here
             console.log("fetchData");
             if(props.depPool && props.depPool.methods) {
-                const totalUniLiquidity = await props.depPool.methods.totalUniLiquidity().call();
-                console.log("totalUniLiquidity >> ");
-                console.log(totalUniLiquidity);
-                const UNI_LP_BORROWED = await props.depPool.methods.UNI_LP_BORROWED().call();
-                console.log("UNI_LP_BORROWED >> ");
-                console.log(UNI_LP_BORROWED);
-                const _borrowRate = await props.depPool.methods.getBorrowRate().call();
-                console.log("_borrowRate >> ");
-                console.log(_borrowRate.toString());//this is a yearly rate that is added on top of the uni yield
-                setBorrowRate(BigNumber.from(_borrowRate.toString()).mul(100).toString());
-                const utilizationRate = await props.depPool.methods.getUtilizationRate().call();
-                console.log("utilizationRate >> ");
-                console.log(utilizationRate);
-                setUtilRate(BigNumber.from(utilizationRate.toString()).mul(100).toString());
+
                 const uniPair = await props.depPool.methods.getUniPair().call();
                 console.log("uniPair >> ");
                 console.log(uniPair);
@@ -75,45 +62,63 @@ function Statistics(props) {
                 const decimalPrice = price.div(BigNumber.from(10).pow(18)).toString();
                 console.log("decimalPrice >>");
                 console.log(decimalPrice);
-                const BORROWED_INVARIANT = await props.depPool.methods.BORROWED_INVARIANT().call();
-                console.log("BORROWED_INVARIANT >> ");
-                console.log(BORROWED_INVARIANT);
-                const priceSquare = sqrt(price.mul(BigNumber.from(10).pow(18)));
-                console.log("priceSquare >>");
-                console.log(priceSquare.toString());
-                const borrowedFunds = BigNumber.from(BORROWED_INVARIANT.toString()).mul(priceSquare).mul(2);
-                console.log("borrowedFunds >>");
-                console.log(borrowedFunds.toString());
-                //BigNumber.from(BORROWED_INVARIANT.toString()).mul()
-                //invariant calculated from reserves. (part of pool that belongs to us is balance from uniPair)
-                const uniTotalSupply = await uniPairContract.methods.totalSupply().call();
-                console.log(uniTotalSupply);
-                const uniLpSharesInGamma = await uniPairContract.methods.balanceOf(props.depPool._address).call();
-                console.log(uniLpSharesInGamma);
-                const poolShare = BigNumber.from(uniLpSharesInGamma.toString()).mul(BigNumber.from(10).pow(18))
-                    .div(BigNumber.from(uniTotalSupply.toString()));
-                console.log("poolShare >>");
-                console.log(poolShare.toString());//pool share percentage (in decimal)
-                setUniShare(BigNumber.from(poolShare.toString()).mul(100).toString());
-                const totalUniFunds = BigNumber.from(reserves.reserve1).mul(2);
-                console.log("totalUniFunds >> ")
-                console.log(totalUniFunds.toString());
-                const totalGammaFundsInUni = totalUniFunds.mul(poolShare).div(BigNumber.from(10).pow(18));
-                console.log("totalGammaFundsInUni >>");
-                console.log(totalGammaFundsInUni.toString());
-                const totalGammaFunds = borrowedFunds.add(totalGammaFundsInUni);
-                console.log("totalGammaFunds >> ");
-                console.log(totalGammaFunds.toString());
-                setTotalFunds(totalGammaFunds.toString());
-                const leftOverRate = (BigNumber.from(10).pow(18)).sub(BigNumber.from(utilizationRate.toString()));
-                console.log("leftOverRate >> ");
-                console.log(leftOverRate.toString());
-                const _availToBorrow = totalGammaFunds.mul(leftOverRate).div(BigNumber.from(10).pow(18));
-                console.log("_availToBorrow >>");
-                console.log(_availToBorrow.toString());
-                setAvailToBorrow(_availToBorrow.toString());
-                //TotalFunds: convert(BORROWED_INVARIANT + invariant in Uni that belongs to us. Total Pool Funds)
-                //Available to Borrow: (1 - UtilizationRate) * TotalFunds
+
+                const totalUniLiquidity = await props.depPool.methods.totalUniLiquidity().call();
+                console.log("totalUniLiquidity >> ");
+                console.log(totalUniLiquidity);
+                if(BigNumber.from(totalUniLiquidity.toString()).gt(constants.Zero)) {
+                    const UNI_LP_BORROWED = await props.depPool.methods.UNI_LP_BORROWED().call();
+                    console.log("UNI_LP_BORROWED >> ");
+                    console.log(UNI_LP_BORROWED);
+                    const _borrowRate = await props.depPool.methods.getBorrowRate().call();
+                    console.log("_borrowRate >> ");
+                    console.log(_borrowRate.toString());//this is a yearly rate that is added on top of the uni yield
+                    setBorrowRate(BigNumber.from(_borrowRate.toString()).mul(100).toString());
+                    const utilizationRate = await props.depPool.methods.getUtilizationRate().call();
+                    console.log("utilizationRate >> ");
+                    console.log(utilizationRate);
+                    setUtilRate(BigNumber.from(utilizationRate.toString()).mul(100).toString());
+                    const BORROWED_INVARIANT = await props.depPool.methods.BORROWED_INVARIANT().call();
+                    console.log("BORROWED_INVARIANT >> ");
+                    console.log(BORROWED_INVARIANT);
+                    const priceSquare = sqrt(price.mul(BigNumber.from(10).pow(18)));
+                    console.log("priceSquare >>");
+                    console.log(priceSquare.toString());
+                    const borrowedFunds = BigNumber.from(BORROWED_INVARIANT.toString()).mul(priceSquare).mul(2);
+                    console.log("borrowedFunds >>");
+                    console.log(borrowedFunds.toString());
+                    //BigNumber.from(BORROWED_INVARIANT.toString()).mul()
+                    //invariant calculated from reserves. (part of pool that belongs to us is balance from uniPair)
+                    const uniTotalSupply = await uniPairContract.methods.totalSupply().call();
+                    console.log(uniTotalSupply);
+                    const uniLpSharesInGamma = await uniPairContract.methods.balanceOf(props.depPool._address).call();
+                    console.log(uniLpSharesInGamma);
+                    const poolShare = BigNumber.from(uniLpSharesInGamma.toString()).mul(BigNumber.from(10).pow(18))
+                        .div(BigNumber.from(uniTotalSupply.toString()));
+                    console.log("poolShare >>");
+                    console.log(poolShare.toString());//pool share percentage (in decimal)
+                    setUniShare(BigNumber.from(poolShare.toString()).mul(100).toString());
+                    const totalUniFunds = BigNumber.from(reserves.reserve1).mul(2);
+                    console.log("totalUniFunds >> ")
+                    console.log(totalUniFunds.toString());
+                    const totalGammaFundsInUni = totalUniFunds.mul(poolShare).div(BigNumber.from(10).pow(18));
+                    console.log("totalGammaFundsInUni >>");
+                    console.log(totalGammaFundsInUni.toString());
+                    const totalGammaFunds = borrowedFunds.add(totalGammaFundsInUni);
+                    console.log("totalGammaFunds >> ");
+                    console.log(totalGammaFunds.toString());
+                    setTotalFunds(totalGammaFunds.toString());
+                    const leftOverRate = (BigNumber.from(10).pow(18)).sub(BigNumber.from(utilizationRate.toString()));
+                     console.log("leftOverRate >> ");
+                     console.log(leftOverRate.toString());
+                     const _availToBorrow = totalGammaFunds.mul(leftOverRate).div(BigNumber.from(10).pow(18));
+                     console.log("_availToBorrow >>");
+                     console.log(_availToBorrow.toString());
+                     setAvailToBorrow(_availToBorrow.toString());
+                     //TotalFunds: convert(BORROWED_INVARIANT + invariant in Uni that belongs to us. Total Pool Funds)
+                     //Available to Borrow: (1 - UtilizationRate) * TotalFunds
+                     /**/
+                }
             }
         }
         fetchData();

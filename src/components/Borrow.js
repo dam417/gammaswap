@@ -47,7 +47,7 @@ function Borrow({ account, token0, token1, posManager }) {
                         fontWeight={'semibold'}
                         htmlFor='token0'
                         >
-                            {token0.symbol} Collateral
+                            Collateral {token0.symbol}
                         </FormLabel>
                         <Input
                             color={'#e2e8f0'}
@@ -63,7 +63,7 @@ function Borrow({ account, token0, token1, posManager }) {
                         fontWeight={'semibold'}
                         htmlFor='token1'
                         >
-                            {token1.symbol} Collateral
+                            Collateral {token1.symbol}
                         </FormLabel>
                         <Input
                             color={'#e2e8f0'}
@@ -79,7 +79,7 @@ function Borrow({ account, token0, token1, posManager }) {
                             mt={5}
                             htmlFor='liquidity'
                         >
-                            Liquidity
+                            Liquidity ({token1 ? token1.symbol : "" })
                         </FormLabel>
                         <Input
                             color={'#e2e8f0'}
