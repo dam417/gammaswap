@@ -20,14 +20,14 @@ const CrossChain = () => {
                         color={'#e2e8f0'}
                         fontSize={'md'}
                         fontWeight={'semibold'}
-                        htmlFor='token0'
+                        htmlFor='token_amount'
                     >
                         Token Amount
                     </FormLabel>
                     <Input
                         placeholder='1 ALGO'
                         color={'#e2e8f0'}
-                        id='token0'
+                        id='token_amount'
                         type='text'
                     />
                     <FormLabel
@@ -35,15 +35,15 @@ const CrossChain = () => {
                         fontSize={'md'}
                         fontWeight={'semibold'}
                         mt={5}
-                        htmlFor='token1'
+                        htmlFor='dest_address'
                     >
-                        Token Address
+                        Destination Address
                     </FormLabel>
                     <Input
-                        placeholder='chain'
+                        placeholder='0x...'
                         color={'#e2e8f0'}
-                        id='token1'
-                        type='0x...'
+                        id='dest_address'
+                        type='text'
                     />
                     <Button
                         my={5}
