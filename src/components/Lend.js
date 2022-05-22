@@ -227,9 +227,6 @@ function Lend({ account, depPool, token0, token1}) {
                             type='number'
                             {...register('token1Amt')}
                         />
-                        <Button type='submit' onClick={() => {
-                            reset()
-                        }}>Reset</Button>&nbsp;
                         <Button
                             my={5}
                             colorScheme='blue'

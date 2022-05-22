@@ -12,6 +12,8 @@ import {
     Box
 } from '@chakra-ui/react'
 
+const ZEROMIN = 0;
+
 function Borrow({ account, token0, token1, posManager, depPool }) {
     const [ liq1InTokB, setLiq1InTokB] = useState("0");
     const [ liq2InTokB, setLiq2InTokB] = useState("0");
@@ -87,8 +89,25 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
         console.log(token0Amt);
         console.log(token1Amt);
         console.log(liquidity);
+
+        const token0Allowance = await checkAllowance(account, token0);
+        console.log("token0Allowance >> ");
+        console.log(token0Allowance);
+        if (token0Allowance <= 0) {
+            console.log("approve for token0");
+            await approve(token0, posManager._address)
+        }
+
+        const token1Allowance = await checkAllowance(account, token1);
+        console.log("token1Allowance >> ");
+        console.log(token1Allowance);
+        if (token1Allowance <= 0) {
+            console.log("approve for token1");
+            await approve(token1, posManager._address)
+        }
+
         // TODO
-        /*const createPosition = await posManager.methods.openPosition(
+        const createPosition = await posManager.methods.openPosition(
             token0.address,
             token1.address,
             token0Amt,
@@ -98,6 +117,53 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
         ).send({ from: account });
         console.log("createPosition");
         console.log(createPosition);/**/
+
+
+        /*const addLiquidity = await depPool
+            .methods
+            .addLiquidity(
+                Web3.utils.toWei(token0Amt, "ether"),
+                Web3.utils.toWei(token1Amt, "ether"),
+                ZEROMIN,
+                ZEROMIN,
+                account
+            ).send({ from: account })
+            .then(res => {
+                alert("Liquidity has been Deposited.")
+
+            })
+            .catch(err => {
+                console.error(err)
+            })/**/
+    }
+
+    async function checkAllowance(account, token) {
+        console.log("checking allowance...")
+        if (token.symbol) console.log(token.symbol);
+        const allowedAmt = await token
+            .contract
+            .methods
+            .allowance(account, posManager._address)
+            .call();
+        /*.then(res => {
+         console.log("check allowance " + token.symbol);
+         console.log(res)
+         return res
+         })
+         .catch(err => {
+         console.log("IM HERE")
+         console.error(err)
+         })/**/
+        console.log("allowedAmt >>");
+        console.log(allowedAmt);
+        return allowedAmt;
+    }
+
+    async function approve(fromToken, toAddr) {
+        console.log(fromToken);
+        const res = await fromToken.contract.methods.approve(toAddr, constants.MaxUint256).send({ from: account });
+        console.log("res >>");
+        console.log(res);
     }
 
     function handleLiq1Chng(evt) {
