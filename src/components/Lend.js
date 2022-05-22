@@ -135,7 +135,7 @@ function Lend({ account, depPool, token0, token1}) {
                         <Heading
                         color={'#e2e8f0'}
                         mt={3}
-                        size='md'>Balance</Heading>
+                        size='md'></Heading>
                         <FormLabel
                             color={'#e2e8f0'}
                             fontSize={'md'}
