@@ -4,8 +4,6 @@ import { BigNumber, constants } from 'ethers'
 import Borrow from './Borrow';
 import Lend from './Lend';
 import Statistics from './Statistics';
-import IUniswapV2Pair from '../abis/IUniswapV2Pair.json';
-import Web3 from "web3/dist/web3.min.js";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Container, Heading } from '@chakra-ui/react';
 
 function TabGroup(props) {
