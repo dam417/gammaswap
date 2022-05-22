@@ -195,7 +195,7 @@ function Lend({ account, depPool, token0, token1}) {
             <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg'>
                 <form onSubmit={handleSubmit(deposit)}>
                     <FormControl p={14} boxShadow='lg'>
-                        <Heading color={'#e2e8f0'}>Deposit Tokens</Heading>
+                        <Heading color={'#e2e8f0'} marginBottom={'25px'}>Deposit Tokens</Heading>
                         <FormLabel
                             color={'#e2e8f0'}
                             fontSize={'md'}
@@ -241,7 +241,7 @@ function Lend({ account, depPool, token0, token1}) {
                 </form>
                 <form onSubmit={handleSubmit2(withdraw)}>
                     <FormControl p={14}>
-                        <Heading color={'#e2e8f0'}>Withdraw Liquidity</Heading>
+                        <Heading color={'#e2e8f0'} marginBottom={'25px'}>Withdraw Liquidity</Heading>
                         <FormLabel
                             color={'#e2e8f0'}
                             fontSize={'md'}
