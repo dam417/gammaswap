@@ -20,7 +20,7 @@ function Home() {
                 fontSize="6xl"
                 bgGradient="linear(to-l, #79c2ff, #4a5888)"
                 >
-                GammaSwap
+                GammaSwap 🚀
                 </Heading>
             </Box>
             <Box>

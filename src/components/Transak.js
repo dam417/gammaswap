@@ -47,9 +47,9 @@ function Transak() {
     return (
         <Container>
             <Stack>
-                <Heading>Buy Crypto With Cash</Heading>
+                <Heading fontSize={'5xl'} color={'#e2e8f0'}>Begin your Gamma Future Now!</Heading>
                 <Button onClick={() => openTransak()}>
-                    Buy Crypto With Cash
+                    Buy Crypto With Cash 💸
                 </Button>
             </Stack>
         </Container>
