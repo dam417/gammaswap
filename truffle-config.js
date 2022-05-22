@@ -60,17 +60,41 @@ module.exports = {
     // },
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
-     ropsten: {
-       provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${projectId}`),
-       network_id: 3,       // Ropsten's id
+    ropsten: {
+      provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${projectId}`),
+      network_id: 3,       // Ropsten's id
        gas: 5500000,        // Ropsten has a lower block limit than mainnet
        confirmations: 2,    // # of confs to wait between deployments. (default: 0)
        timeoutBlocks: 3000,  // # of blocks before a deployment times out  (minimum/default: 50)
        skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-     },
+    },
+    rinkby: {
+      provider: () => new HDWalletProvider(mnemonic, `https://ethereum-rinkeby--rpc.datahub.figment.io/apikey/5a815ef82b2a648dd2cd77912231d746`),
+      network_id: 4,       // Ropsten's id
+      gas: 5500000,        // Ropsten has a lower block limit than mainnet
+      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 3000,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    },
      mumbai: {
-      provider: () => new HDWalletProvider(mnemonic, `https://rpc-mumbai.matic.today`),
+      provider: () => new HDWalletProvider(mnemonic, 'wss://matic-mumbai--ws.datahub.figment.io/apikey/8c1d9d4a4923d0548cdae8df46b64c25'), // `https://matic-mumbai.chainstacklabs.com/`),
       network_id: 80001,       // Ropsten's id
+      gas: 5500000,        // Ropsten has a lower block limit than mainnet
+      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 3000,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    },
+    neartest: {
+      provider: () => new HDWalletProvider(mnemonic, 'https://near-testnet--rpc.datahub.figment.io/apikey/c1f66cde2abde949da194331ce9e28b1'),
+      network_id: 1313161555,       // Ropsten's id
+      gas: 5500000,        // Ropsten has a lower block limit than mainnet
+      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 3000,  // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    },
+    celotest: {
+      provider: () => new HDWalletProvider(mnemonic, 'https://alfajores-forno.celo-testnet.org'),
+      network_id: 44787,       // Ropsten's id
       gas: 5500000,        // Ropsten has a lower block limit than mainnet
       confirmations: 2,    // # of confs to wait between deployments. (default: 0)
       timeoutBlocks: 3000,  // # of blocks before a deployment times out  (minimum/default: 50)

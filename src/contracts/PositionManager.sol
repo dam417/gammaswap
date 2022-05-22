@@ -28,7 +28,7 @@ contract PositionManager is IPositionManager, ERC721 {
     mapping(address => uint256) public positionCountByOwner;
 
     address[] public  allPools;
-    address owner;
+    address public owner;
 
     uint256 ONE = 10**18;//1
 
@@ -54,15 +54,19 @@ contract PositionManager is IPositionManager, ERC721 {
 
     function registerPool(address token0, address token1, address pool) external {
         require(msg.sender == owner, "PositionManager: FORBIDDEN");
-        if(getPool[token0][token1] == address(0) || getPool[token1][token0] == address(0)) {
+        //if(getPool[token0][token1] == address(0) || getPool[token1][token0] == address(0)) {
             getPool[token0][token1] = pool;
             getPool[token1][token0] = pool; // populate mapping in the reverse direction
             allPools.push(pool);
-        }
+        //}
     }
 
-    function allPoolsLength() external view returns (uint) {
-        return allPools.length;
+    function getOwner() external view returns(address _owner) {
+        _owner = owner;
+    }
+
+    function allPoolsLength() external view returns (uint256 _len) {
+        _len = allPools.length;
     }
 
     function getDepositedAmounts(address token0, address token1) internal view returns(uint256 token0Amt, uint256 token1Amt) {
