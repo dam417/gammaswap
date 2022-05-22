@@ -9,9 +9,21 @@ import {
 function About() {
     return (
         <Container>
+            <Heading
+                    as="h1"
+                    fontFamily="body"
+                    color="#e2e8f0"
+                    fontSize="6xl"
+                >
+                    What makes GammaSwap so Great?
+            </Heading>
             <Stack>
-                <Heading>What makes GammaSwap so Great?</Heading>
-                <Text>
+                <Text
+                    as="p"
+                    fontFamily="body"
+                    color="#94a3b8"
+                    fontSize="2xl"
+                >
                 Apparently we had reached a great height in the atmosphere, for the
                 sky was a dead black, and the stars had ceased to twinkle. By the same
                 illusion which lifts the horizon of the sea to the level of the
