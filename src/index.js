@@ -11,6 +11,13 @@ const theme = extendTheme({
     heading: 'Neue Machina Ultrabold, sans-serif',
     body: 'Neue Machina Regular, sans-serif',
   },
+  styles: {
+    global: () => ({
+      body: {
+        bg: "",
+      }
+    })
+  },
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
