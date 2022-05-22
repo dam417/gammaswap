@@ -1,29 +1,56 @@
-import { Heading, Container, Stack, Text } from '@chakra-ui/react';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Heading, VStack, Box } from '@chakra-ui/react';
+import * as React from 'react'
 
-function Home(props) {
-    // Declare a new state variable, which we'll call "count"
-    /*const [tokenA, setTokenA] = useState(0);
-    const [tokenB, setTokenB] = useState(0);
-
-    let navigate = useNavigate();
-
-    const routeChange = (id) =>{
-        console.log("routeChange >> " + id);
-        let path = `/pool/${id}`;
-        navigate(path);
-    }/**/
-
+function Home() {
     return (
-        <Container>
-            <Stack>
-                <Heading>GammaSwap</Heading>
-                <Text>
-                Leveraging Uniswap for Better Pool Performance.
-                </Text>
-            </Stack>
-        </Container>
+        <VStack
+            spacing={8}
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            pt={24}
+            pb={12}
+            >
+            <Box>
+                <Heading
+                as="h1"
+                fontFamily="body"
+                bgColor="blue.400"
+                bgClip="text"
+                fontSize="6xl"
+                bgGradient="linear(to-l, #79c2ff, #4a5888)"
+                >
+                GammaSwap
+                </Heading>
+            </Box>
+            <Box>
+                <Heading
+                as="h2"
+                size="lg"
+                lineHeight="tall"
+                color="gray.500"
+                fontWeight="medium"
+                >
+                    Leveraging UniSwap for Better Pool Performance.
+                {/* I&apos;m a{" "}
+                <Box as="span" color="gray.300">
+                    Developer
+                </Box>
+                , who likes{" "}
+                <Box as="span" color="gray.300">
+                    Designing,{" "}
+                </Box>{" "}
+                <Box as="span" color="gray.300">
+                    Writing
+                </Box>{" "}
+                and{" "}
+                <Box as="span" color="gray.300">
+                    Building Open Source
+                </Box>{" "}
+                projects. */}
+                </Heading>
+            </Box>
+        </VStack>
     )
 
 }
