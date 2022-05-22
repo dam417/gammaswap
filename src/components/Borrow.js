@@ -36,15 +36,14 @@ function Borrow({ account, token0, token1, posManager }) {
 
     async function openPositionHandler({ token0Amt, token1Amt, liquidity }) {
         // TODO
-
-        // const createPosition = await posManager.methods.openPosition(
-        //     token0.address,
-        //     token1.address,
-        //     token0Amt,
-        //     token1Amt,
-        //     liquidity,
-        //     account,  
-        // ).call();
+        const createPosition = await posManager.methods.openPosition(
+            token0.address,
+            token1.address,
+            token0Amt,
+            token1Amt,
+            liquidity,
+            account,  
+        ).call();
     }
 
     function handleChng(evt) {
@@ -81,6 +80,7 @@ function Borrow({ account, token0, token1, posManager }) {
                         <Input
                             color={'#e2e8f0'}
                             placeholder='amount'
+                            color={'#e2e8f0'}
                             id='token0'
                             type='number'
                             {...register('token0Amt')}
@@ -97,6 +97,7 @@ function Borrow({ account, token0, token1, posManager }) {
                         <Input
                             color={'#e2e8f0'}
                             placeholder='amount'
+                            color={'#e2e8f0'}
                             id='token1'
                             type='number'
                             {...register('token1Amt')}
@@ -113,6 +114,7 @@ function Borrow({ account, token0, token1, posManager }) {
                         <Input
                             color={'#e2e8f0'}
                             placeholder='amount'
+                            color={'#e2e8f0'}
                             id='liquidity'
                             type='number'
                             onChange={e => handleChng(e.target.value)}
@@ -145,7 +147,7 @@ function Borrow({ account, token0, token1, posManager }) {
                             <Input
                                 id='repayLiquidity'
                                 placeholder='amount'
-                                type='number' 
+                                color={'#e2e8f0'}                                type='number' 
                                 {...register2('repayLiquidity')}
                             />
                         <Button
