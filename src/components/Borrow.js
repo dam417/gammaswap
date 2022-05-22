@@ -17,6 +17,7 @@ const ZEROMIN = 0;
 function Borrow({ account, token0, token1, posManager }) {
     const [ liq1InTokB, setLiq1InTokB] = useState("0");
     const [ liq2InTokB, setLiq2InTokB] = useState("0");
+    const [ posId, setPosId] = useState("");
     const [ balInTokB, setBalInTokB] = useState("0");
     const [ uniPrice, setUniPrice] = useState("0");
     const [ pos, setPos] = useState({});
@@ -58,6 +59,7 @@ function Borrow({ account, token0, token1, posManager }) {
                     console.log("position() >>");
                     console.log(position);
                     setPos(position);
+                    setPosId(positionCount.toString());
                     const uniPair = position.uniPair;
                     console.log("uniPair >> ");
                     console.log(uniPair);
@@ -191,6 +193,19 @@ function Borrow({ account, token0, token1, posManager }) {
 
     async function repayHandler({ repayLiquidity }) {
         // TODO
+        console.log("repayHandler() >> ");
+        console.log(repayLiquidity);
+        console.log("posManager >>");
+        console.log(posManager);
+
+        console.log("pos >>");
+        console.log(pos);
+        console.log("pos.tokenId >>");
+        console.log(pos.tokenId);
+        const res = await posManager.methods.decreasePosition(posId,
+            Web3.utils.toWei(repayLiquidity.toString(), "ether")).send({ from: account });
+        console.log("res >>");
+        console.log(res);
     }
 
     return (
