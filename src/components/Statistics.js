@@ -13,6 +13,8 @@ import Web3 from "web3/dist/web3.min.js";
 function Statistics(props) {
 
     const [availToBorrow, setAvailToBorrow] = useState("0");
+    const [availLiqToBorrow, setAvailLiqToBorrow] = useState("0");
+    const [totalLiq, setTotalLiq] = useState("0");
     const [totalFunds, setTotalFunds] = useState("0");
     const [utilRate, setUtilRate] = useState("0");
     const [borrowRate, setBorrowRate] = useState("0");
@@ -66,10 +68,12 @@ function Statistics(props) {
                 const totalUniLiquidity = await props.depPool.methods.totalUniLiquidity().call();
                 console.log("totalUniLiquidity >> ");
                 console.log(totalUniLiquidity);
+                setTotalLiq(BigNumber.from(totalUniLiquidity.toString()));
                 if(BigNumber.from(totalUniLiquidity.toString()).gt(constants.Zero)) {
                     const UNI_LP_BORROWED = await props.depPool.methods.UNI_LP_BORROWED().call();
                     console.log("UNI_LP_BORROWED >> ");
                     console.log(UNI_LP_BORROWED);
+                    setAvailLiqToBorrow(totalUniLiquidity.toString());
                     const _borrowRate = await props.depPool.methods.getBorrowRate().call();
                     console.log("_borrowRate >> ");
                     console.log(_borrowRate.toString());//this is a yearly rate that is added on top of the uni yield
@@ -129,7 +133,11 @@ function Statistics(props) {
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Total Funds: {pretty(totalFunds)} {props.token1.symbol}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
-                Available To Borrow: {pretty(availToBorrow)} {props.token1.symbol}</Heading>
+                Avail To Borrow: {pretty(availToBorrow)} {props.token1.symbol}</Heading>
+            <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
+                Total Liq: {pretty(totalLiq.toString())}</Heading>
+            <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
+                Avail Liq To Borrow: {pretty(availLiqToBorrow)}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Utilization Rate: {pretty(utilRate)}%</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>

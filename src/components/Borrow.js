@@ -98,6 +98,8 @@ function Borrow({ account, token0, token1, posManager }) {
                         </Button>
                     </FormControl>
                 </form>
+                <Heading  as='h5' fontFamily="body" size='md'  color={'#e2e8f0'}>Balance: 0 {token1 ? token1.symbol : ""}</Heading>
+                <Heading  as='h5' fontFamily="body" size='md'  color={'#e2e8f0'}>Liquidity: 0 </Heading>
                 <form onSubmit={handleSubmit2(repayHandler)}>
                     <FormControl p={14} boxShadow='lg' mt={10}>
                         <Heading color={'#e2e8f0'}>Repay</Heading>
