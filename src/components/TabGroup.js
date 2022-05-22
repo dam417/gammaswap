@@ -28,6 +28,7 @@ function TabGroup(props) {
                     <TabPanel>
                         <Borrow
                             posManager={props.posManager}
+                            depPool={props.depPool}
                             account={props.account}
                             token0={props.token0}
                             token1={props.token1}
