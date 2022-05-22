@@ -75,15 +75,16 @@ module.exports = async function(_deployer, network, accounts) {
         await positionManager.registerPool(tokenAaddr, tokenBaddr, depositPool.address, { from: accounts[0] });
         console.log("pool registered");
     } else if(network == "rinkby") {
-        let tokenAaddr = "0x2C1c71651304Db63f53dc635D55E491B45647f6f";
-        let tokenBaddr = "0xbed4729d8E0869f724Baab6bA045EB67d72eCb7c";
+        let tokenAaddr = "0xc486EB1C54Ab026bE11Fdca00775c0594310c4d4";
+        let tokenBaddr = "0x91Cc47d320993977B3Ac74a49c49780Dd2d6c734";
         let uniRouterAddr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-        let uniPairAddr = "0x0ea795cc5f3db9607feadfdf56a139264179ef1e";
+        let uniPairAddr = "0x587ca050a11538f640b2fc50cff06424c1d307bd";
         let uniFactoryAddr = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-        let positionManagerAddr = '0x8d505e6Ec65c3DE1e6AC7F989D9e7d0c1edb42ab';
+        let positionManagerAddr = '0x6e41851ef47E4ab45A02f4e4d73f1bc3a3eD6f18';
+        let depositPoolAddr = '0xa768aDC0f5A27cdd5Be76aee213FF79ac5aD76Ef';
 
-        let isNewTokens = true;
-        let isNewPosManager = true;
+        let isNewTokens = false;
+        let isNewPosManager = false;
 
         const url = `https://ethereum-rinkeby--rpc.datahub.figment.io/apikey/5a815ef82b2a648dd2cd77912231d746`;
         const provider = (isNewTokens || !isNewPosManager) ? new ethers.providers.JsonRpcProvider(url) : null;
