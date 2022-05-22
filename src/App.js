@@ -42,12 +42,12 @@ function App() {
 
       console.log("networkId >> " + networkId);
       if (networkId == 3) {
-        const _posManager = new web3.eth.Contract(PosManager.abi, "0xD2813571Ff183E5Bf9Ac98e5e04e71E6DBf62a8e");
+        const _posManager = new web3.eth.Contract(PosManager.abi, "0xC6CB7f8c046756Bd33ad6b322a3b88B0CA9ceC1b");
         setPosManager(_posManager);
         console.log("posManager >>");
         console.log(_posManager);
 
-        const _depPool = new web3.eth.Contract(DepPool.abi, "0xf3fF5B35A4545244B2959f71CFFA7c26cafAa753");
+        const _depPool = new web3.eth.Contract(DepPool.abi, "0x3eFadc5E507bbdA54dDb4C290cc3058DA8163152");
         setDepPool(_depPool);
         console.log("depPool >>");
         console.log(_depPool);
