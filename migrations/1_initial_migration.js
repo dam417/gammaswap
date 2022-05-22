@@ -73,7 +73,7 @@ module.exports = async function (_deployer, network, accounts) {
 
         if (isNewPosManager) {
             await
-            _deployer.deploy(PositionManager, "Gammaswap PosMgr V0", "GAMPOS-VO", {from: accounts[0]});
+            _deployer.deploy(PositionManager,uniRouterAddr, "Gammaswap PosMgr V0", "GAMPOS-VO", {from: accounts[0]});
             positionManager = await
             PositionManager.deployed();
         } else {

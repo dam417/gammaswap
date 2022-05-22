@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@uniswap/lib/contracts/libraries/TransferHelper.sol';
+import '@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol';
 
 import './libraries/GammaswapPosLibrary.sol';
 import './interfaces/IPositionManager.sol';
@@ -27,6 +28,7 @@ contract PositionManager is IPositionManager, ERC721 {
     mapping(address => uint256[]) public positionsByOwner;
     mapping(address => uint256) public positionCountByOwner;
 
+    address public uniRouter;
     address[] public  allPools;
     address public owner;
 
@@ -48,8 +50,24 @@ contract PositionManager is IPositionManager, ERC721 {
         _;
     }
 
-    constructor(string memory name_, string memory symbol_) ERC721(name_, symbol_) {
+    constructor(address _uniRouter, string memory name_, string memory symbol_) ERC721(name_, symbol_) {
         owner = msg.sender;
+        uniRouter = _uniRouter;
+    }
+
+    /// inheritdoc IVegaswapV1Position
+    function positions(uint256 tokenId) external view returns (uint96 nonce, address operator, address poolId, address token0, address token1,
+        uint256 tokensHeld0, uint256 tokensHeld1, address uniPair, uint256 liquidity, uint256 rateIndex, uint256 blockNum) {
+        Position memory position = _positions[tokenId];
+        require(position.uniPair != address(0), 'PositionManager: INVALID_TOKEN_ID');
+        //require(position.tokensHeld0 != 0 && position.tokensHeld1 != 0 && position.tokensHeld0 != 0, 'VegaswapV1: Invalid token ID');
+        //PoolAddress.PoolKey memory poolKey = _poolIdToPoolKey[position.poolId];
+        return (position.nonce, position.operator, position.poolId, position.token0, position.token1, position.tokensHeld0, position.tokensHeld1,
+        position.uniPair, position.liquidity, position.rateIndex, position.blockNum);
+    }
+
+    function tokenBalances(address token) external view returns (uint256 balance) {
+        return _tokenBalances[token];
     }
 
     function registerPool(address token0, address token1, address pool) external {
@@ -245,6 +263,92 @@ contract PositionManager is IPositionManager, ERC721 {
 
         //emit DecreasePosition(tokenId, liquidity, position.tokensHeld0, position.tokensHeld1);
     }
+
+
+    //function _getAndIncrementNonce(uint256 tokenId) internal override returns (uint256) {
+    //    return uint256(_positions[tokenId].nonce++);
+    //}
+
+    /// @dev Overrides _approve to use the operator in the position, which is packed with the position permit nonce
+    //function _approve(address to, uint256 tokenId) internal override(ERC721) {
+    function _approve(address to, uint256 tokenId) internal override {
+        _positions[tokenId].operator = to;
+        emit Approval(ownerOf(tokenId), to, tokenId);
+    }
+
+    /// inheritdoc IERC721
+    function getApproved(uint256 tokenId) public view override returns (address) {
+    //function getApproved(uint256 tokenId) public view override(ERC721, IERC721) returns (address) {
+        require(_exists(tokenId), 'ERC721: approved query for nonexistent token');
+        return _positions[tokenId].operator;
+    }
+
+    /// inheritdoc IVegaswapV1Position
+    function burn(uint256 tokenId) external isAuthorizedForToken(tokenId) {
+        Position storage position = _positions[tokenId];
+        require(position.tokensHeld0 == 0 && position.tokensHeld1 == 0 && position.liquidity == 0, 'PositionManager: NOT_CLEARED');
+        delete _positions[tokenId];
+        _burn(tokenId);
+    }/**/
+
+    /*function swapPositionExactTokensForTokens(RebalanceParams calldata params) external isAuthorizedForToken(params.tokenId) {
+        Position storage position = _positions[params.tokenId];
+
+        uint256 origAmt = 0;
+
+        if(params.side) {
+            position.tokensHeld0 = IERC20(position.token0).balanceOf(address(this)) - origAmt + position.tokensHeld0;
+        } else {
+            position.tokensHeld1 = IERC20(position.token1).balanceOf(address(this)) - origAmt + position.tokensHeld1;
+        }
+
+        GammaswapPosLibrary.checkCollateral(position, 850);
+
+        (_tokenBalances[position.token0], _tokenBalances[position.token1]) = GammaswapPosLibrary.getTokenBalances(position.token0, position.token1, address(this));
+    }
+
+    function swapPositionTokensForExactTokens(RebalanceParams calldata params) external isAuthorizedForToken(params.tokenId) {
+        Position storage position = _positions[params.tokenId];
+
+        uint256 origAmt = 0;
+
+        if(params.side) {
+            position.tokensHeld1 = position.tokensHeld1 - origAmt - IERC20(position.token1).balanceOf(address(this));
+        } else {
+            position.tokensHeld0 = position.tokensHeld0 - origAmt - IERC20(position.token0).balanceOf(address(this));
+        }
+
+        GammaswapPosLibrary.checkCollateral(position, 850);
+
+        (_tokenBalances[position.token0], _tokenBalances[position.token1]) = GammaswapPosLibrary.getTokenBalances(position.token0, position.token1, address(this));
+    }/**/
+
+
+
+    function getUniswapPath(address _token0, address _token1, address _to, uint256 amount) private returns(address[] memory path) {
+        path = new address[](2);
+        path[0] = _token0;
+        path[1] = _token1;
+
+        if(amount > IERC20(path[0]).allowance(_to, uniRouter)) {
+            IERC20(path[0]).approve(uniRouter, type(uint).max);
+        }
+    }
+
+    //Uniswap.
+    function swapExactTokensForTokens(address _token0, address _token1, uint256 amountOutMin, uint256 amount, address _to) internal {
+        //address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
+        address[] memory path = getUniswapPath(_token0, _token1, _to, amount);
+        IUniswapV2Router02(uniRouter).swapExactTokensForTokens(amount, amountOutMin, path, _to, type(uint).max);
+    }
+
+    //Uniswap.
+    function swapTokensForExactTokens(address _token0, address _token1, uint256 amountInMax, uint256 amount, address _to) internal {
+        //address _uniRouter = IVegaswapV1Factory(factory).uniRouter();
+        address[] memory path = getUniswapPath(_token0, _token1, _to, amount);
+        IUniswapV2Router02(uniRouter).swapTokensForExactTokens(amount, amountInMax, path, _to, type(uint).max);
+    }/**/
+
     /*function PositionManager(){
 
     }/**/

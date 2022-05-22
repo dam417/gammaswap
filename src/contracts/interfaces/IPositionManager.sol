@@ -19,6 +19,14 @@ interface IPositionManager {
         uint256 blockNum;
     }
 
+
+    struct RebalanceParams {
+        uint256 tokenId;
+        uint256 amount;
+        bool side;//true=buy=>give token1 for token0
+        uint256 slippage;
+    }/**/
+
     /*struct MintParams {
         address token0;
         address token1;

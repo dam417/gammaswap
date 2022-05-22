@@ -70,9 +70,11 @@ export async function poolFixture(provider, address) {
     await uniFactory.createPair(tokenA.address, tokenB.address, { from: address });
     const uniPairAddress = await uniFactory.getPair(tokenA.address, tokenB.address);
 
-    const posManager = await TestPositionManager.new({ from: address });
+    const posManager = await TestPositionManager.new(uniRouter.address, { from: address });
     //address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager
     const pool = await TestDepositPool.new(uniRouter.address, uniPairAddress, tokenA.address, tokenB.address, posManager.address, { from: address });
+
+    await posManager.registerPool(tokenA.address, tokenB.address, pool.address, { from: address});
     //const pool = new Contract(poolAddress, JSON.stringify(VegaswapV1Pool.abi), provider).connect(provider.getSigner(address));
     //const pool = new Contract(poolAddress, JSON.stringify(TestDepositPool.abi), provider).connect(provider.getSigner(address));
 
@@ -137,7 +139,7 @@ export async function testPoolFixture(provider, address) {
     await uniFactory.createPair(tokenA.address, tokenB.address, { from: address });
     const uniPairAddress = await uniFactory.getPair(tokenA.address, tokenB.address);
 
-    const posManager = await TestPositionManager.new({ from: address });
+    const posManager = await TestPositionManager.new(uniRouter.address, { from: address });
     //address _uniRouter, address _uniPair, address _token0, address _token1, address _positionManager
     const pool = await TestDepositPool.new(uniRouter.address, uniPairAddress, tokenA.address, tokenB.address, address, { from: address });
     //const pool = new Contract(poolAddress, JSON.stringify(VegaswapV1Pool.abi), provider).connect(provider.getSigner(address));
