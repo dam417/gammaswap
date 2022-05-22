@@ -72,7 +72,7 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
                 if(pos.liquidity) {
                     const _uniPrice = BigNumber.from(uniPrice.toString());
                     setLiq1InTokB(pretty((sqrt(_uniPrice.mul(BigNumber.from(10).pow(18))).mul(pos.liquidity)
-                        .div(BigNumber.from(10).pow(10))).mul(2).toString()));
+                        .div(BigNumber.from(10).pow(18))).mul(2).toString()));
                 } else {
                     setBalInTokB("0");
                 }
