@@ -14,7 +14,7 @@ import {
 
 const ZEROMIN = 0;
 
-function Borrow({ account, token0, token1, posManager, depPool }) {
+function Borrow({ account, token0, token1, posManager }) {
     const [ liq1InTokB, setLiq1InTokB] = useState("0");
     const [ liq2InTokB, setLiq2InTokB] = useState("0");
     const [ balInTokB, setBalInTokB] = useState("0");
@@ -55,34 +55,43 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
                 console.log(positions);
                 if(positionCount > 0) {
                     const position = await posManager.methods.positions(positionCount).call();
+                    console.log("position() >>");
+                    console.log(position);
                     setPos(position);
-                }
-            }
-            if(depPool && depPool.methods) {
-                const uniPair = await depPool.methods.getUniPair().call();
-                console.log("uniPair >> ");
-                console.log(uniPair);
-                const uniPairContract = new web3.eth.Contract(IUniswapV2Pair.abi, uniPair);
-                const reserves = await uniPairContract.methods.getReserves().call();
-                console.log("reserves >>");
-                console.log(reserves.reserve0);
-                console.log(reserves.reserve1);
-                const price = BigNumber.from(reserves.reserve1).mul(BigNumber.from(10).pow(18)).div(reserves.reserve0);
-                console.log("price >>");
-                console.log(price.toString());
-                setUniPrice(price.toString());
-                if(pos.liquidity) {
-                    const _uniPrice = BigNumber.from(uniPrice.toString());
-                    setLiq1InTokB(pretty((sqrt(_uniPrice.mul(BigNumber.from(10).pow(18))).mul(pos.liquidity)
-                        .div(BigNumber.from(10).pow(18))).mul(2).toString()));
-                } else {
-                    setBalInTokB("0");
+                    const uniPair = position.uniPair;
+                    console.log("uniPair >> ");
+                    console.log(uniPair);
+                    const uniPairContract = new web3.eth.Contract(IUniswapV2Pair.abi, uniPair);
+                    const reserves = await uniPairContract.methods.getReserves().call();
+                    console.log("reserves >>");
+                    console.log(reserves.reserve0);
+                    console.log(reserves.reserve1);
+                    const price = BigNumber.from(reserves.reserve1).mul(BigNumber.from(10).pow(18)).div(reserves.reserve0);
+                    console.log("Borrow.price >>");
+                    console.log(price.toString());
+                    setUniPrice(price.toString());
+                    const _uniPrice = BigNumber.from(price.toString());
+                    if(_uniPrice.gt(constants.Zero)){
+                        console.log('set balance in tokB');
+                        const ONE = BigNumber.from(10).pow(18);
+                        console.log("herer xxx0");
+                        const squarePrice = sqrt(_uniPrice.mul(ONE));
+                        console.log("herer xxx1");
+                        const squarePrice2 = BigNumber.from(squarePrice.toString());
+                        console.log("herer xxx2");
+                        const posLiquidity = BigNumber.from(position.liquidity.toString());
+                        const bal = (squarePrice2.mul(posLiquidity).div(ONE)).mul(2);
+                        console.log("herer xxx3");
+                        console.log("bal >> " + bal.toString());
+                        setBalInTokB(pretty(bal.toString()));
+                        console.log("herer xxx4");
+                    }
                 }
             }
 
         }
         fetchData();
-    }, [posManager, depPool]);
+    }, [posManager]);
 
     async function openPositionHandler({ token0Amt, token1Amt, liquidity }) {
         console.log("openPositionHandler() >>");
@@ -110,31 +119,13 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
         const createPosition = await posManager.methods.openPosition(
             token0.address,
             token1.address,
-            token0Amt,
-            token1Amt,
-            liquidity,
+            Web3.utils.toWei(token0Amt, "ether"),
+            Web3.utils.toWei(token1Amt, "ether"),
+            Web3.utils.toWei(liquidity, "ether"),
             account,  
         ).send({ from: account });
         console.log("createPosition");
         console.log(createPosition);/**/
-
-
-        /*const addLiquidity = await depPool
-            .methods
-            .addLiquidity(
-                Web3.utils.toWei(token0Amt, "ether"),
-                Web3.utils.toWei(token1Amt, "ether"),
-                ZEROMIN,
-                ZEROMIN,
-                account
-            ).send({ from: account })
-            .then(res => {
-                alert("Liquidity has been Deposited.")
-
-            })
-            .catch(err => {
-                console.error(err)
-            })/**/
     }
 
     async function checkAllowance(account, token) {
@@ -274,7 +265,7 @@ function Borrow({ account, token0, token1, posManager, depPool }) {
                     </FormControl>
                 </form>
                 <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Balance: {balInTokB} {token1 ? token1.symbol : ""}</Heading>
-                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Liquidity: {pos.liquidity ? pos.liquidity : 0} </Heading>
+                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Liquidity: {pos.liquidity ? pretty(pos.liquidity) : 0} </Heading>
                 <form onSubmit={handleSubmit2(repayHandler)}>
                     <FormControl p={14} boxShadow='lg' mt={10}>
                         <Heading color={'#e2e8f0'} marginBottom={'25px'}>Repay Loan</Heading>

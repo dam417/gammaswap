@@ -68,11 +68,11 @@ function Statistics(props) {
                 const totalUniLiquidity = await props.depPool.methods.totalUniLiquidity().call();
                 console.log("totalUniLiquidity >> ");
                 console.log(totalUniLiquidity);
-                setTotalLiq(BigNumber.from(totalUniLiquidity.toString()));
+                const UNI_LP_BORROWED = await props.depPool.methods.UNI_LP_BORROWED().call();
+                console.log("UNI_LP_BORROWED >> ");
+                console.log(UNI_LP_BORROWED);
+                setTotalLiq(BigNumber.from(totalUniLiquidity.toString()).add(BigNumber.from(UNI_LP_BORROWED.toString())));
                 if(BigNumber.from(totalUniLiquidity.toString()).gt(constants.Zero)) {
-                    const UNI_LP_BORROWED = await props.depPool.methods.UNI_LP_BORROWED().call();
-                    console.log("UNI_LP_BORROWED >> ");
-                    console.log(UNI_LP_BORROWED);
                     setAvailLiqToBorrow(totalUniLiquidity.toString());
                     const _borrowRate = await props.depPool.methods.getBorrowRate().call();
                     console.log("_borrowRate >> ");
@@ -88,7 +88,8 @@ function Statistics(props) {
                     const priceSquare = sqrt(price.mul(BigNumber.from(10).pow(18)));
                     console.log("priceSquare >>");
                     console.log(priceSquare.toString());
-                    const borrowedFunds = BigNumber.from(BORROWED_INVARIANT.toString()).mul(priceSquare).mul(2);
+                    const borrowedFunds = ((BigNumber.from(BORROWED_INVARIANT.toString()).mul(priceSquare))
+                        .div(BigNumber.from(10).pow(18))).mul(2);
                     console.log("borrowedFunds >>");
                     console.log(borrowedFunds.toString());
                     //BigNumber.from(BORROWED_INVARIANT.toString()).mul()
@@ -135,15 +136,15 @@ function Statistics(props) {
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Avail To Borrow: {pretty(availToBorrow)} {props.token1.symbol}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
-                Total Liq: {pretty(totalLiq.toString())}</Heading>
+                Total Uni Liq Shares in Pool: {pretty(totalLiq.toString())}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
-                Avail Liq To Borrow: {pretty(availLiqToBorrow)}</Heading>
+                Avail Uni Liq Shares To Borrow: {pretty(availLiqToBorrow)}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Utilization Rate: {pretty(utilRate)}%</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Borrow Rate: {pretty(borrowRate)}%</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
-                Uni Pool Share: {pretty(uniShare)}%</Heading>
+                Share of Uni Pool: {pretty(uniShare)}%</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Price: {pretty(uniPrice)} {props.token1.symbol}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
