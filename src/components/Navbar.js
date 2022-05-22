@@ -11,7 +11,7 @@ import {
     useColorModeValue,
     useDisclosure,
 } from '@chakra-ui/react';
-  
+
 function Navbar(props) {
     const { isOpen, onToggle } = useDisclosure();
 
@@ -40,7 +40,7 @@ function Navbar(props) {
                         bg={'#2563eb'}
                         href={'#'}
                         _hover={{
-                        bg: '#3b82f6',
+                            bg: '#3b82f6',
                         }}>
                         {props.account !== props.account ? "Connect Wallet" : props.account}
                     </Button>
@@ -57,41 +57,41 @@ const DesktopNav = () => {
 
     return (
         <Stack direction={'row'} spacing={4}>
-        {NAV_ITEMS.map((navItem) => (
-            <Box key={navItem.label}>
-            <Popover trigger={'hover'} placement={'bottom-start'}>
-                <PopoverTrigger>
-                <ChakraLink
-                    p={2}
-                    href={navItem.href ?? '#'}
-                    fontSize={'lg'}
-                    fontWeight={700}
-                    color={linkColor}
-                    _hover={{
-                    textDecoration: 'none',
-                    color: linkHoverColor,
-                    }}>
-                    {navItem.label}
-                </ChakraLink>
-                </PopoverTrigger>
-                {navItem.children && (
-                <PopoverContent
-                    border={0}
-                    boxShadow={'xl'}
-                    bg={popoverContentBgColor}
-                    p={4}
-                    rounded={'xl'}
-                    minW={'sm'}>
-                    <Stack>
-                    {navItem.children.map((child) => (
-                        <DesktopSubNav key={child.label} {...child} />
-                    ))}
-                    </Stack>
-                </PopoverContent>
-                )}
-            </Popover>
-            </Box>
-        ))}
+            {NAV_ITEMS.map((navItem) => (
+                <Box key={navItem.label}>
+                    <Popover trigger={'hover'} placement={'bottom-start'}>
+                        <PopoverTrigger>
+                            <ChakraLink
+                                p={2}
+                                href={navItem.href ?? '#'}
+                                fontSize={'lg'}
+                                fontWeight={700}
+                                color={linkColor}
+                                _hover={{
+                                    textDecoration: 'none',
+                                    color: linkHoverColor,
+                                }}>
+                                {navItem.label}
+                            </ChakraLink>
+                        </PopoverTrigger>
+                        {navItem.children && (
+                            <PopoverContent
+                                border={0}
+                                boxShadow={'xl'}
+                                bg={popoverContentBgColor}
+                                p={4}
+                                rounded={'xl'}
+                                minW={'sm'}>
+                                <Stack>
+                                    {navItem.children.map((child) => (
+                                        <DesktopSubNav key={child.label} {...child} />
+                                    ))}
+                                </Stack>
+                            </PopoverContent>
+                        )}
+                    </Popover>
+                </Box>
+            ))}
         </Stack>
     );
 };
@@ -108,6 +108,10 @@ const NAV_ITEMS = [
     {
         label: 'Launch',
         href: '/app',
+    },
+    {
+        label: 'Need crypto?',
+        href: '/transak',
     },
 ];
 
