@@ -1,11 +1,16 @@
-import * as React from 'react';
+//import * as React from 'react';
+import React, { useState, useEffect } from 'react'
+import { BigNumber, constants } from 'ethers'
 import Borrow from './Borrow';
 import Lend from './Lend';
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Container } from '@chakra-ui/react';
+import Statistics from './Statistics';
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Container, Heading } from '@chakra-ui/react';
 
 function TabGroup(props) {
+
     return (
         <Container>
+            <Statistics depPool={props.depPool} token0={props.token0} token1={props.token1}/>
             <Tabs variant='soft-rounded' colorScheme={'purple'}>
                 <TabList>
                     <Tab textColor={'#e2e8f0'}>Lend</Tab>

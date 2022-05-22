@@ -47,9 +47,10 @@ function Borrow({ account, token0, token1, posManager }) {
                         fontWeight={'semibold'}
                         htmlFor='token0'
                         >
-                            {token0.symbol}
+                            Collateral {token0.symbol}
                         </FormLabel>
                         <Input
+                            color={'#e2e8f0'}
                             placeholder='amount'
                             id='token0'
                             type='number'
@@ -62,9 +63,10 @@ function Borrow({ account, token0, token1, posManager }) {
                         fontWeight={'semibold'}
                         htmlFor='token1'
                         >
-                            {token1.symbol}
+                            Collateral {token1.symbol}
                         </FormLabel>
                         <Input
+                            color={'#e2e8f0'}
                             placeholder='amount'
                             id='token1'
                             type='number'
@@ -73,13 +75,14 @@ function Borrow({ account, token0, token1, posManager }) {
                         <FormLabel
                             color={'#e2e8f0'}
                             fontSize={'md'}
-                            fontWeight={'semibold'}                    
+                            fontWeight={'semibold'}
                             mt={5}
                             htmlFor='liquidity'
                         >
-                            Liquidity
+                            Liquidity ({token1 ? token1.symbol : "" })
                         </FormLabel>
                         <Input
+                            color={'#e2e8f0'}
                             placeholder='amount'
                             id='liquidity'
                             type='number'
@@ -95,6 +98,8 @@ function Borrow({ account, token0, token1, posManager }) {
                         </Button>
                     </FormControl>
                 </form>
+                <Heading  as='h5' fontFamily="body" size='md'  color={'#e2e8f0'}>Balance: 0 {token1 ? token1.symbol : ""}</Heading>
+                <Heading  as='h5' fontFamily="body" size='md'  color={'#e2e8f0'}>Liquidity: 0 </Heading>
                 <form onSubmit={handleSubmit2(repayHandler)}>
                     <FormControl p={14} boxShadow='lg' mt={10}>
                         <Heading color={'#e2e8f0'}>Repay</Heading>

@@ -8,7 +8,7 @@ contract TestPositionManager is PositionManager {
 
     event TestInfo(uint256 num1, uint256 num2, uint256 num3, uint256 num4, uint256 num5, uint256 num6, uint256 num7, uint256 num8, uint256 num9, uint256 num10);
 
-    constructor() PositionManager("","") {
+    constructor(address _uniRouter) PositionManager(_uniRouter, "","") {
     }
 
     function forceUpdatePositionLiquidity(uint256 tokenId) public {

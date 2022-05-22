@@ -10,6 +10,17 @@ import "../interfaces/IPositionManager.sol";
 
 library GammaswapPosLibrary {
 
+    function min(uint num0, uint num1) internal view returns(uint res) {
+        res = Math.min(num0, num1);
+    }
+
+    //Uniswap
+    function getPairPx(address uniPair) internal view returns(uint256 px) {
+        //(uint256 reserve0, uint256 reserve1) = getCPMReserves(uniPair);
+        (uint256 reserve0, uint256 reserve1,) = IUniswapV2Pair(uniPair).getReserves();
+        px = (reserve1 * (10**18)) / reserve0;
+    }
+
     // returns sorted token addresses, used to handle return values from pairs sorted in this order
     function sortTokens(address tokenA, address tokenB) internal pure returns (address token0, address token1) {
         require(tokenA != tokenB, 'GammaswapPosLibrary: IDENTICAL_ADDRESSES');
@@ -73,6 +84,37 @@ library GammaswapPosLibrary {
         require((heldBalance * limit) / 1000 >= owedBalance, 'GammaswapPosLibrary: INSUFFICIENT_COLLATERAL_DEPOSITED');
     }
 
+
+    /*function swapPositionExactTokensForTokens(IPositionManager.Position storage position, IPositionManager.RebalanceParams calldata params) internal {
+
+        //uint256 MAX_SLIPPAGE = 10**17;//10%
+        //uint256 ONE = 10**18;//1
+        uint256 origAmt;
+        //uint256 px = getPairPx(position.uniPair);
+        //uint256 maxSlippage = 10**17;
+        if(params.side) {
+            origAmt = IERC20(position.token0).balanceOf(address(this));
+            position.tokensHeld1 = position.tokensHeld1 - params.amount;
+            uint256 amountOutMin = (params.amount * (9 * (10**17))) / getPairPx(position.uniPair);
+            swapExactTokensForTokens(position.token1, position.token0, amountOutMin, params.amount, address(this));
+        } else {
+            origAmt = IERC20(position.token1).balanceOf(address(this));
+            position.tokensHeld0 = position.tokensHeld0 - params.amount;
+            uint noSlipAmt = (params.amount * getPairPx(position.uniPair)) / (10**18);
+            uint256 amountOutMin = (noSlipAmt * (9 * (10**17))) / (10**18);
+            swapExactTokensForTokens(position.token0, position.token1, amountOutMin, params.amount, address(this));
+        }
+
+        if(params.side) {
+            position.tokensHeld0 = IERC20(position.token0).balanceOf(address(this)) - origAmt + position.tokensHeld0;
+        } else {
+            position.tokensHeld1 = IERC20(position.token1).balanceOf(address(this)) - origAmt + position.tokensHeld1;
+        }
+
+        checkCollateral(position, 850);
+
+        //(_tokenBalances[position.token0], _tokenBalances[position.token1]) = GammaswapPosLibrary.getTokenBalances(position.token0, position.token1, address(this));
+    }/**/
     /*function GammaswapPosLibrary(){
 
     }/**/
