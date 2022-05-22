@@ -55,6 +55,10 @@ contract PositionManager is IPositionManager, ERC721 {
         uniRouter = _uniRouter;
     }
 
+    function getPositionsByOwner(address user) external view returns(uint256[] memory tokenIds) {
+        tokenIds = positionsByOwner[user];
+    }
+
     /// inheritdoc IVegaswapV1Position
     function positions(uint256 tokenId) external view returns (uint96 nonce, address operator, address poolId, address token0, address token1,
         uint256 tokensHeld0, uint256 tokensHeld1, address uniPair, uint256 liquidity, uint256 rateIndex, uint256 blockNum) {
@@ -322,8 +326,6 @@ contract PositionManager is IPositionManager, ERC721 {
 
         (_tokenBalances[position.token0], _tokenBalances[position.token1]) = GammaswapPosLibrary.getTokenBalances(position.token0, position.token1, address(this));
     }/**/
-
-
 
     function getUniswapPath(address _token0, address _token1, address _to, uint256 amount) private returns(address[] memory path) {
         path = new address[](2);

@@ -27,7 +27,7 @@ module.exports = async function (_deployer, network, accounts) {
         let uniRouterAddr = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
         let uniPairAddr = "0x0ea795cc5f3db9607feadfdf56a139264179ef1e";
         let uniFactoryAddr = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
-        let positionManagerAddr = '0xcEA5F0c1ab968697c00cB0850Df63143Ee2b04cF';
+        let positionManagerAddr = '0x71ef2e1FeE7a0C8F32C2e45209691121d858340f';
 
         let isNewTokens = false;
         let isNewPosManager = true;
@@ -94,7 +94,7 @@ module.exports = async function (_deployer, network, accounts) {
 
 
         await positionManager.registerPool(tokenAaddr, tokenBaddr, depositPool.address, {from: accounts[0]});
-        //await positionManager.registerPool(tokenAaddr, tokenBaddr, "0x6a8100F0671dF7c81c3fBCa6e5e9513473fE2be6", {from: accounts[0]});
+        //await positionManager.registerPool(tokenAaddr, tokenBaddr, "0x9b962677801344e8989A4DCB7584e5eB291fb633", {from: accounts[0]});
         console.log("pool registered");
         const res = await positionManager.allPoolsLength();
         console.log("res allPools >>");
