@@ -31,7 +31,7 @@ function Home() {
                 color="gray.500"
                 fontWeight="medium"
                 >
-                    Leveraging UniSwap for Better Pool Performance.
+                    Decentralized Volatility Exchange
                 {/* I&apos;m a{" "}
                 <Box as="span" color="gray.300">
                     Developer

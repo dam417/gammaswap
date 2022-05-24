@@ -21,7 +21,7 @@ cache
 
 # production
 /build
-/src/abis
+#/src/abis
 /abis
 
 # misc
