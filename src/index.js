@@ -4,6 +4,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import Fonts from './Fonts';
 import './index.css';
 import App from './App';
+import Waitlist from './components/Waitlist';
 import reportWebVitals from './reportWebVitals';
 
 const theme = extendTheme({
@@ -21,11 +22,13 @@ const theme = extendTheme({
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const isWaitlist = true;
+
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <Fonts />
-      <App />
+      {isWaitlist ? <Waitlist /> : <App />}
     </ChakraProvider>
   </React.StrictMode>
 );
