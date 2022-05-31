@@ -1,4 +1,5 @@
-import * as React from 'react'
+import * as React from 'react';
+import NavItems from './NavItems';
 import {
     Box,
     Flex,
@@ -32,7 +33,7 @@ function Navbar(props) {
                     justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
-                    <Button
+                    {/* <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'lg'}
                         fontWeight={700}
@@ -43,7 +44,7 @@ function Navbar(props) {
                             bg: '#3b82f6',
                         }}>
                         {props.account !== props.account ? "Connect Wallet" : props.account}
-                    </Button>
+                    </Button> */}
                 </Stack>
             </Flex>
         </Box>
@@ -57,7 +58,7 @@ const DesktopNav = () => {
 
     return (
         <Stack direction={'row'} spacing={4}>
-            {NAV_ITEMS.map((navItem) => (
+            {NavItems.map((navItem) => (
                 <Box key={navItem.label}>
                     <Popover trigger={'hover'} placement={'bottom-start'}>
                         <PopoverTrigger>
@@ -95,28 +96,5 @@ const DesktopNav = () => {
         </Stack>
     );
 };
-
-const NAV_ITEMS = [
-    {
-        label: 'Home',
-        href: '/',
-    },
-    {
-        label: 'About',
-        href: '/about',
-    },
-    {
-        label: 'Launch',
-        href: '/app',
-    },
-    {
-        label: 'Need crypto?',
-        href: '/transak',
-    },
-    {
-        label: 'Bridge',
-        href: '/bridge',
-    },
-];
 
 export default Navbar

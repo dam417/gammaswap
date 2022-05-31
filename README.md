@@ -11,3 +11,7 @@ How to start client:
 install pm2 globally "npm install -g pm2"
 
 start client by running "pm2 start app.sh"
+
+## Truffle Run command
+"postinstall": "npx truffle compile && npm run generate-types",
+    
