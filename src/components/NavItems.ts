@@ -7,6 +7,10 @@ const NavItems: Array<NavItems> = [
     {
         label: 'Blog',
         href: 'https://medium.com/@danielalcarraz_42353',
+    },
+    {
+        label: 'About Us',
+        href: '/aboutus'
     }
     // {
     //     label: 'Home',
