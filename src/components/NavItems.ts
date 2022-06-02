@@ -5,6 +5,10 @@ type NavItems = {
 
 const NavItems: Array<NavItems> = [
     {
+        label: 'Logo',
+        href: '#',
+    },
+    {
         label: 'Blog',
         href: 'https://medium.com/@danielalcarraz_42353',
     },
