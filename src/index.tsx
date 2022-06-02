@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 import App from './App';
-import Waitlist from './components/Waitlist';
+import Waitlist from './components/Waitlist/Waitlist';
 import reportWebVitals from './reportWebVitals';
 
 import theme from './theme';
@@ -12,6 +12,10 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+/**
+ * Boolean that internally toggles
+ * between the waitlist component and the whole app
+ */
 const isWaitlist = true;
 
 root.render(
