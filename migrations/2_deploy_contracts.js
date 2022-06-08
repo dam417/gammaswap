@@ -5,6 +5,8 @@ const { projectId } = require('../secrets.json');
 const TestERC20 = artifacts.require('./TestERC20');
 const DepositPool = artifacts.require('./DepositPool');
 const PositionManager = artifacts.require('./PositionManager');
+const TestDepositPool = artifacts.require('./TestDepositPool');
+const TestPositionManager = artifacts.require('./TestPositionManager');
 
 const json1 = require("@uniswap/v2-core/build/UniswapV2Factory.json");//.bytecode;
 const UniswapV2Factory = contract(json1);
@@ -78,6 +80,8 @@ module.exports = async function(_deployer, network, accounts) {
         let depositPool = await DepositPool.deployed();
         console.log("deployer::positionManager.address=" + positionManager.address);
         console.log("deployer::depositPool.address=" + depositPool.address);
+        /**/
+
 
         await positionManager.registerPool(tokenAaddr, tokenBaddr, depositPool.address, {from: accounts[0]});
         //await positionManager.registerPool(tokenAaddr, tokenBaddr, "0x9b962677801344e8989A4DCB7584e5eB291fb633", {from: accounts[0]});
@@ -176,5 +180,11 @@ module.exports = async function(_deployer, network, accounts) {
         let depositPool = await DepositPool.deployed();
         console.log("deployer::depositPool.address="+depositPool.address);
         await positionManager.registerPool(tokenA.address, tokenB.address, depositPool.address, { from: accounts[0] });
+
+        // for testing
+        await _deployer.deploy(TestDepositPool, uniRouter.address, uniPair, tokenA.address, tokenB.address, positionManager.address, { from: accounts[0] });
+        let testDepositPool = await TestDepositPool.deployed();
+        await _deployer.deploy(TestPositionManager, uniRouter.address, { from: accounts[0] });
+        let testPositionManager = await TestPositionManager.deployed();
     }
 };
