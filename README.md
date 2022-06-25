@@ -12,7 +12,7 @@ install pm2 globally "npm install -g pm2"
 
 start client by running "pm2 start app.sh"
 
+Client runs on port 3010
+
 ## Truffle Run command
 "postinstall": "npx truffle compile && npm run generate-types",
-    
-Runs on port 3010
