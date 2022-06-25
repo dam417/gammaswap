@@ -17,7 +17,7 @@ const root = ReactDOM.createRoot(
  * Boolean that internally toggles
  * between the waitlist component and the whole app
  */
-const isWaitlist = true;
+const isWaitlist = false;
 
 root.render(
   <React.StrictMode>

@@ -33,7 +33,7 @@ function Navbar(props) {
                     justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
-                    {/* <Button
+                    { <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'lg'}
                         fontWeight={700}
@@ -44,7 +44,7 @@ function Navbar(props) {
                             bg: '#3b82f6',
                         }}>
                         {props.account !== props.account ? "Connect Wallet" : props.account}
-                    </Button> */}
+                    </Button>}
                 </Stack>
             </Flex>
         </Box>

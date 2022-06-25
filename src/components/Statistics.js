@@ -24,7 +24,7 @@ function Statistics(props) {
     const [uniTokBReserves, setUniTokBReserves] = useState("0");
 
     function pretty(num) {
-        return Web3.utils.fromWei(num);
+        return parseFloat(Web3.utils.fromWei(num.toString()).toString()).toFixed(2);
     }
 
     function sqrt(y){
@@ -130,7 +130,7 @@ function Statistics(props) {
     }, [props.depPool]);
 
     return (
-        <div>
+        <div style={{textAlign: "center"}}>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>
                 Total Funds: {pretty(totalFunds)} {props.token1.symbol}</Heading>
             <Heading margin={'15px'}  as='h5' fontFamily="body" size='sm' color={'#e2e8f0'}>

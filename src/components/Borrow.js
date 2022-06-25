@@ -25,7 +25,14 @@ function Borrow({ account, token0, token1, posManager }) {
     const { register: register2, handleSubmit: handleSubmit2 } = useForm();
 
     function pretty(num) {
-        return Web3.utils.fromWei(num);
+        //return num;
+        console.log("fuck");
+        console.log(num);
+        console.log(num.toString());
+        return parseFloat(Web3.utils.fromWei(num).toString()).toFixed(2);
+        //return num;//
+        //return parseFloat(Web3.utils.fromWei(num.toString()).toString()).toFixed(2);
+        //return parseFloat(Web3.utils.fromWei(num.toString()).toString()).toFixed(2);
     }
 
     function sqrt(y){
@@ -210,7 +217,7 @@ function Borrow({ account, token0, token1, posManager }) {
 
     return (
         <>
-            <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg'>
+            <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg' style={{textAlign: "center"}}>
                 <form onSubmit={handleSubmit(openPositionHandler)}>
                     <FormControl p={14}>
                         <Heading marginBottom={'25px'}
@@ -279,8 +286,10 @@ function Borrow({ account, token0, token1, posManager }) {
                         </Button>
                     </FormControl>
                 </form>
-                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Balance: {balInTokB} {token1 ? token1.symbol : ""}</Heading>
-                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}>Liquidity: {pos.liquidity ? pretty(pos.liquidity) : 0} </Heading>
+                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}
+                    style={{textAlign: "center"}}>Balance: {balInTokB} {token1 ? token1.symbol : ""}</Heading>
+                <Heading  as='h5' fontFamily="body" size='md' color={'#e2e8f0'}
+                    style={{textAlign: "center"}}>Liquidity: {pos.liquidity ? pretty(pos.liquidity) : 0} </Heading>
                 <form onSubmit={handleSubmit2(repayHandler)}>
                     <FormControl p={14} boxShadow='lg' mt={10}>
                         <Heading color={'#e2e8f0'} marginBottom={'25px'}>Repay Loan</Heading>

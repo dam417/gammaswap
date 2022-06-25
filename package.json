@@ -14,7 +14,7 @@
     "test": "mocha",
     "prepublishOnly": "yarn test",
     "generate-types": "npx typechain --target=truffle-v5 'src/abis/*.json'",
-    "start": "react-scripts start",
+    "start": "PORT=3010 react-scripts start",
     "build": "react-scripts build",
     "test1": "react-scripts test",
     "eject": "react-scripts eject"
@@ -24,6 +24,7 @@
   "dependencies": {
     "@chakra-ui/react": "^2.0.2",
     "@ethersproject/strings": "^5.6.0",
+    "@fontsource/inter": "^4.5.11",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-regular-svg-icons": "^6.1.1",

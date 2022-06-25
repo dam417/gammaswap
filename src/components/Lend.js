@@ -32,7 +32,7 @@ function Lend({ account, depPool, token0, token1}) {
 
 
     function pretty(num) {
-        return Web3.utils.fromWei(num);
+        return parseFloat(Web3.utils.fromWei(num).toString()).toFixed(2);
     }
 
     function sqrt(y){
@@ -192,7 +192,7 @@ function Lend({ account, depPool, token0, token1}) {
     return (
         /*Lend LP Form */
         <>
-            <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg'>
+            <Box borderRadius={'3xl'} bg={'#1d2c52'} boxShadow='dark-lg' style={{textAlign: "center"}}>
                 <form onSubmit={handleSubmit(deposit)}>
                     <FormControl p={14} boxShadow='lg'>
                         <Heading color={'#e2e8f0'} marginBottom={'25px'}>Deposit Tokens</Heading>

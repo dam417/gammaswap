@@ -15,3 +15,4 @@ start client by running "pm2 start app.sh"
 ## Truffle Run command
 "postinstall": "npx truffle compile && npm run generate-types",
     
+Runs on port 3010
