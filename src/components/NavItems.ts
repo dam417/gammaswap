@@ -1,6 +1,7 @@
 type NavItems = {
     label: string,
-    href: string;
+    href: string,
+    target: string
 }
 
 const NavItems: Array<NavItems> = [
@@ -15,6 +16,7 @@ const NavItems: Array<NavItems> = [
     {
          label: 'Home',
          href: '/',
+         target: ""
     },
     // {
     //     label: 'About',
@@ -27,14 +29,17 @@ const NavItems: Array<NavItems> = [
     {
          label: 'Need crypto?',
          href: '/transak',
+         target: ""
     },
     {
          label: 'Bridge',
          href: '/bridge',
+         target: ""
     },
     {
         label: 'Blog',
         href: 'https://medium.com/gammaswap-labs',
+        target: "_blank"
     }
 ];
 
