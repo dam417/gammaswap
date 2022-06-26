@@ -1,3 +1,3 @@
 #!/bin/bash
 
-npm start
+serve -s build -l 3010

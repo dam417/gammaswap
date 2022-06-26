@@ -40,28 +40,20 @@ function App() {
       setAccountAddr(accounts[0]);
       const networkId = await web3.eth.net.getId();
 
-      console.log("networkId >> " + networkId);
       if (networkId == 3) {
         const _posManager = new web3.eth.Contract(PosManager.abi, "0xC6CB7f8c046756Bd33ad6b322a3b88B0CA9ceC1b");
         setPosManager(_posManager);
-        console.log("posManager >>");
-        console.log(_posManager);
 
         const _depPool = new web3.eth.Contract(DepPool.abi, "0x3eFadc5E507bbdA54dDb4C290cc3058DA8163152");
         setDepPool(_depPool);
-        console.log("depPool >>");
-        console.log(_depPool);
         const token0Addr = await _depPool.methods.token0().call();
-        console.log("token0Addr >> " + token0Addr);
         const token1Addr = await _depPool.methods.token1().call();
-        console.log("token1Addr >> " + token1Addr);
 
         const _token0 = new web3.eth.Contract(IERC20Metadata.abi, token0Addr);
         const _token1 = new web3.eth.Contract(IERC20Metadata.abi, token1Addr);
 
         const symbol0 = await _token0.methods.symbol().call();
         const symbol1 = await _token1.methods.symbol().call();
-        console.log("token1Addr >> " + token1Addr);
 
         setToken0({ address: token0Addr, symbol: symbol0, contract: _token0 });
         setToken1({ address: token1Addr, symbol: symbol1, contract: _token1 });
@@ -78,16 +70,13 @@ function App() {
           setDepPool(_depPool);
 
           const token0Addr = await _depPool.methods.token0().call();
-          console.log("token0Addr >> " + token0Addr);
           const token1Addr = await _depPool.methods.token1().call();
-          console.log("token1Addr >> " + token1Addr);
 
           const _token0 = new web3.eth.Contract(IERC20.abi, token0Addr);
           const _token1 = new web3.eth.Contract(IERC20.abi, token1Addr);
 
           const symbol0 = await _token0.methods.symbol().call();
           const symbol1 = await _token1.methods.symbol().call();
-          console.log("token1Addr >> " + token1Addr);
           setToken0({ address: token0Addr, symbol: symbol0, contract: _token0 });
           setToken1({ address: token1Addr, symbol: symbol1, contract: _token1 });
         }

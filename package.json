@@ -14,7 +14,7 @@
     "test": "mocha",
     "prepublishOnly": "yarn test",
     "generate-types": "npx typechain --target=truffle-v5 'src/abis/*.json'",
-    "start": "PORT=3010 react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test1": "react-scripts test",
     "eject": "react-scripts eject"

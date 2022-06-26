@@ -56,16 +56,9 @@ function Lend({ account, depPool, token0, token1}) {
                 const liqBal = await depPool.methods.balanceOf(account).call();
                 setLiquidityAmt(pretty(liqBal.toString()));
                 const uniPair = await depPool.methods.getUniPair().call();
-                console.log("uniPair >> ");
-                console.log(uniPair);
                 const uniPairContract = new web3.eth.Contract(IUniswapV2Pair.abi, uniPair);
                 const reserves = await uniPairContract.methods.getReserves().call();
-                console.log("reserves >>");
-                console.log(reserves.reserve0);
-                console.log(reserves.reserve1);
                 const _uniPrice = BigNumber.from(reserves.reserve1).mul(BigNumber.from(10).pow(18)).div(reserves.reserve0);
-                console.log("price >>");
-                console.log(_uniPrice.toString());
                 setUniPrice(_uniPrice.toString());
                 const liqBalNum = BigNumber.from(liqBal.toString());
                 if(liqBalNum.gt(constants.Zero) && _uniPrice.gt(constants.Zero)) {
@@ -81,18 +74,13 @@ function Lend({ account, depPool, token0, token1}) {
 
     async function deposit({ token0Amt, token1Amt}) {
         const token0Allowance = await checkAllowance(account, token0);
-        console.log("token0Allowance >> ");
-        console.log(token0Allowance);
         if (token0Allowance <= 0) {
             console.log("approve for token0");
             await approve(token0, depPool._address)
         }
 
         const token1Allowance = await checkAllowance(account, token1);
-        console.log("token1Allowance >> ");
-        console.log(token1Allowance);
         if (token1Allowance <= 0) {
-            console.log("approve for token1");
             await approve(token1, depPool._address)
         }
 
@@ -129,7 +117,6 @@ function Lend({ account, depPool, token0, token1}) {
         )
         .send({ from: account })
         .then((res) => {
-            console.log(res)
             return res
         })
         .catch(err => {
@@ -138,38 +125,25 @@ function Lend({ account, depPool, token0, token1}) {
     }
 
     async function approve(fromToken, toAddr) {
-        console.log(fromToken);
         const res = await fromToken.contract.methods.approve(toAddr, constants.MaxUint256).send({ from: account });
-        console.log("res >>");
-        console.log(res);
     }
 
     async function approveWithdraw(depPool, depPoolAddr) {
-        console.log(depPool);
         const res = await depPool.methods.approve(depPoolAddr, constants.MaxUint256.toString()).send({ from: account });
-        console.log("withdraw res >>");
-        console.log(res);
     }
 
     async function checkAllowance(account, token) {
-        console.log("checking allowance...")
-        if (token.symbol) console.log(token.symbol);
         const allowedAmt = await token
         .contract
         .methods
         .allowance(account, depPool._address)
         .call();
         /*.then(res => {
-            console.log("check allowance " + token.symbol);
-            console.log(res)
             return res
         })
         .catch(err => {
-            console.log("IM HERE")
             console.error(err)
         })/**/
-        console.log("allowedAmt >>");
-        console.log(allowedAmt);
         return allowedAmt;
     }
 
@@ -179,11 +153,9 @@ function Lend({ account, depPool, token0, token1}) {
         .allowance(account, depPool._address)
         .call()
         .then(res => {
-            console.log(res)
             return res
         })
         .catch(err => {
-            console.log("IM HERE")
             console.error(err)
         })
     }
